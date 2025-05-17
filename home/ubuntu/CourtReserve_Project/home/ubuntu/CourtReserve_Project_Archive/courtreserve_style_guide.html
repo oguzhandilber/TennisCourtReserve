@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve Style Guide</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #F8F9FA; /* Cloud White */
+            color: #343A40; /* Charcoal Grey */
+        }
+        header {
+            background-color: #27677A; /* Deep Aqua */
+            color: #FFFFFF;
+            padding: 24px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        nav {
+            background-color: #FFFFFF;
+            padding: 16px;
+            border-bottom: 1px solid #CED4DA; /* Light Grey */
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 16px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #00A79D; /* Vibrant Teal */
+            font-weight: 600;
+        }
+        .container {
+            max-width: 960px;
+            margin: 32px auto;
+            padding: 0 24px;
+        }
+        section {
+            background-color: #FFFFFF; /* Pure White */
+            padding: 24px;
+            margin-bottom: 32px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #343A40; /* Charcoal Grey */
+            margin-top: 0;
+        }
+        h1 { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 16px;}
+        h2 { font-size: 24px; font-weight: 600; line-height: 1.3; margin-bottom: 16px; border-bottom: 1px solid #CED4DA; padding-bottom: 8px;}
+        h3 { font-size: 20px; font-weight: 600; line-height: 1.4; margin-bottom: 12px;}
+        h4 { font-size: 18px; font-weight: 500; line-height: 1.4; margin-bottom: 10px;}
+        p { margin-bottom: 16px; }
+        code, pre {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            background-color: #E9ECEF; /* Lighter Grey for code blocks */
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin-bottom: 16px;
+        }
+        .color-swatch {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            margin-right: 8px;
+            vertical-align: middle;
+            border: 1px solid #CED4DA;
+        }
+        .color-palette-item {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .color-info {
+            margin-left: 8px;
+        }
+        .color-info strong { display: block; }
+        .component-example {
+            border: 1px solid #E9ECEF;
+            padding: 24px;
+            margin-top: 16px;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            background-color: #F8F9FA;
+        }
+
+        /* Component Specific Styles from Markdown (inline for simplicity in this context) */
+        .logo-example {
+            font-family: 'Inter', sans-serif; /* Assuming Inter is loaded or use fallback */
+            font-size: 24px; 
+            color: #27677A; 
+            font-weight: bold;
+            padding: 16px;
+            background-color: #FFFFFF;
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 8px; /* For spacing in examples */
+            margin-bottom: 8px; /* For spacing in examples */
+        }
+        .btn-primary {
+            background-color: #00A79D; 
+            color: #FFFFFF; 
+        }
+        .btn-primary:hover { background-color: #008C82; }
+        .btn-primary:active { background-color: #007A70; }
+        .btn-primary:disabled { background-color: #CED4DA; color: #6C757D; cursor: not-allowed; }
+
+        .btn-secondary {
+            background-color: #FFFFFF;
+            color: #00A79D;
+            border: 1px solid #00A79D;
+        }
+        .btn-secondary:hover { background-color: #E0F7F6; border-color: #008C82; }
+        .btn-secondary:active { background-color: #B2EBE8; }
+        .btn-secondary:disabled { background-color: #FFFFFF; color: #CED4DA; border-color: #CED4DA; cursor: not-allowed; }
+
+        .btn-tertiary {
+            background-color: transparent;
+            color: #27677A;
+            border: none;
+        }
+        .btn-tertiary:hover { color: #1E505F; text-decoration: underline; }
+        .btn-tertiary:disabled { color: #CED4DA; cursor: not-allowed; }
+
+        .form-input-example-container label {
+            font-size: 14px; color: #6C757D; display: block; margin-bottom: 4px;
+        }
+        .form-input {
+            background-color: #FFFFFF; 
+            border: 1px solid #CED4DA; 
+            border-radius: 8px; 
+            padding: 12px; 
+            font-size: 16px; 
+            color: #343A40;
+            width: calc(100% - 26px); /* Account for padding and border */
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            border-color: #00A79D; 
+            box-shadow: 0 0 0 2px rgba(0, 167, 157, 0.25); 
+            outline: none; 
+        }
+        .form-input-error {
+            border-color: #DC3545 !important; /* Ensure error state overrides focus for border */
+        }
+        .form-input-example-container .error-message {
+            font-size: 12px; color: #DC3545; margin-top: 4px;
+        }
+        .form-input-example-container .helper-message {
+            font-size: 12px; color: #6C757D; margin-top: 4px;
+        }
+
+        .modal-example-overlay {
+            position: relative; /* Static for example */
+            width: 100%; 
+            height: auto; /* auto for example */
+            background-color: rgba(52, 58, 64, 0.6); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .modal-example-container {
+            background-color: #FFFFFF; 
+            border-radius: 8px; 
+            padding: 24px; 
+            min-width: 280px; 
+            max-width: 100%; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-align: left;
+        }
+        .modal-example-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 16px;
+        }
+        .modal-example-header h3 { margin: 0; }
+        .modal-example-close-button {
+            background: none; 
+            border: none; 
+            font-size: 24px; 
+            color: #6C757D; 
+            cursor: pointer;
+        }
+        .modal-example-content { margin-bottom: 24px; }
+        .modal-example-footer { text-align: right; }
+
+        .toast-example {
+            background-color: #28A745; 
+            color: #FFFFFF; 
+            padding: 12px 16px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            display: inline-flex; /* inline-flex for example */
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .toast-example-error { background-color: #DC3545; }
+        .toast-example-warning { background-color: #FFC107; color: #343A40;}
+        .toast-example-info { background-color: #27677A; }
+        .toast-example span:first-child { margin-right: 8px; }
+
+        .list-item-example {
+            padding: 12px 16px;
+            border-bottom: 1px solid #CED4DA;
+            background-color: #FFFFFF;
+        }
+        .list-item-example:last-child { border-bottom: none; }
+        .list-item-example:hover { background-color: #F8F9FA; }
+
+        .card-example {
+            background-color: #FFFFFF; 
+            border-radius: 8px; 
+            padding: 16px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            margin-bottom: 16px;
+            max-width: 300px; /* For better display in style guide */
+        }
+        .card-example img {
+            width: 100%; 
+            height: auto; 
+            border-radius: 4px; 
+            margin-bottom: 12px;
+        }
+        .card-example h3 { font-size: 18px; font-weight: 600; color: #343A40; margin: 0 0 8px 0; }
+        .card-example p { font-size: 14px; color: #6C757D; margin: 0 0 4px 0; }
+        .card-example p.card-highlight { color: #00A79D; }
+
+        .calendar-grid-example {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            max-width: 300px;
+            margin-bottom: 16px;
+        }
+        .date-cell-example {
+            background-color: #FFFFFF;
+            color: #343A40;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+            border: 1px solid #E9ECEF;
+            font-size: 14px;
+        }
+        .date-cell-example.today { border-color: #00A79D; font-weight: bold;}
+        .date-cell-example.selected { background-color: #00A79D; color: #FFFFFF; }
+        .date-cell-example.unavailable { background-color: #E9ECEF; color: #CED4DA; text-decoration: line-through; }
+        .date-cell-example.pending { position: relative; }
+        .date-cell-example.pending::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: 4px; 
+            left: calc(50% - 3px); 
+            width: 6px; 
+            height: 6px; 
+            border-radius: 50%; 
+            background-color: #FFC107; 
+        }
+        .date-cell-example.available:hover { background-color: #E0F7F6; cursor: pointer; }
+
+        .time-slot-example {
+            padding: 8px;
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .time-slot-example.selected { background-color: #00A79D; color: #FFFFFF; border-color: #00A79D; }
+        .time-slot-example.unavailable { background-color: #E9ECEF; color: #CED4DA; cursor: not-allowed; }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>CourtReserve Style Guide</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#foundations">Foundations</a></li>
+            <li><a href="#components">Components</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <section id="foundations">
+            <h2>Foundations</h2>
+            
+            <article id="colors">
+                <h3>1. Color Palette</h3>
+                <p>The palette consists of two primary brand colors and neutral tones, aiming for a bright, inviting, and modern feel.</p>
+                
+                <h4>Primary Brand Colors</h4>
+                <div class="color-palette-item">
+                    <span class="color-swatch" style="background-color: #00A79D;"></span>
+                    <div class="color-info"><strong>Vibrant Teal (Action & Energy)</strong> HEX: #00A79D <br> Usage: Primary buttons, active navigation, highlights.</div>
+                </div>
+                <div class="color-palette-item">
+                    <span class="color-swatch" style="background-color: #27677A;"></span>
+                    <div class="color-info"><strong>Deep Aqua (Trust & Calm)</strong> HEX: #27677A <br> Usage: Secondary buttons, informational icons, subtle backgrounds.</div>
+                </div>
+
+                <h4>Neutral Tones</h4>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #F8F9FA;"></span><div class="color-info"><strong>Cloud White (Base Background)</strong> HEX: #F8F9FA</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #FFFFFF;"></span><div class="color-info"><strong>Pure White (Content Background / Cards)</strong> HEX: #FFFFFF</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #343A40;"></span><div class="color-info"><strong>Charcoal Grey (Primary Text)</strong> HEX: #343A40</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #6C757D;"></span><div class="color-info"><strong>Medium Grey (Secondary Text / Labels)</strong> HEX: #6C757D</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #CED4DA;"></span><div class="color-info"><strong>Light Grey (Borders / Dividers)</strong> HEX: #CED4DA</div></div>
+
+                <h4>Accent & Status Colors</h4>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #28A745;"></span><div class="color-info"><strong>Forest Green (Success/Confirmation)</strong> HEX: #28A745</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #FFC107;"></span><div class="color-info"><strong>Amber Yellow (Warning/Pending)</strong> HEX: #FFC107</div></div>
+                <div class="color-palette-item"><span class="color-swatch" style="background-color: #DC3545;"></span><div class="color-info"><strong>Crimson Red (Error/Decline)</strong> HEX: #DC3545</div></div>
+            </article>
+
+            <article id="logo">
+                <h3>2. Placeholder Logo</h3>
+                <p>A simple, clean text-based placeholder. For initial HTML/CSS prototypes, the logo will be rendered as text styled with CSS.</p>
+                <div class="component-example">
+                    <div class="logo-example">CourtReserve</div>
+                </div>
+                <pre><code>&lt;div class="logo"&gt;CourtReserve&lt;/div&gt;
+&lt;style&gt;
+.logo {
+  font-family: 'Inter', sans-serif; 
+  font-size: 24px; 
+  color: #27677A; /* Deep Aqua */
+  font-weight: bold;
+}
+&lt;/style&gt;</code></pre>
+            </article>
+
+            <article id="typography">
+                <h3>3. Typography</h3>
+                <p>Primary Font Family: <strong>Inter</strong> (Fallback: Helvetica Neue, Arial, sans-serif). Weights: Regular (400), Medium (500), Semi-Bold (600), Bold (700).</p>
+                <h4>Hierarchy & Sizing:</h4>
+                <p><strong>H1 / Page Titles:</strong> 28px, Bold (700), Line Height 1.2, Color #343A40</p>
+                <div class="component-example" style="font-size: 28px; font-weight: 700; line-height: 1.2; color: #343A40;">Page Title Example</div>
+                <p><strong>H2 / Section Titles:</strong> 22px, Semi-Bold (600), Line Height 1.3, Color #343A40</p>
+                <div class="component-example" style="font-size: 22px; font-weight: 600; line-height: 1.3; color: #343A40;">Section Title Example</div>
+                <p><strong>H3 / Card Titles:</strong> 18px, Semi-Bold (600), Line Height 1.4, Color #343A40</p>
+                <div class="component-example" style="font-size: 18px; font-weight: 600; line-height: 1.4; color: #343A40;">Card Title Example</div>
+                <p><strong>Body Text:</strong> 16px, Regular (400), Line Height 1.6, Color #343A40</p>
+                <div class="component-example" style="font-size: 16px; font-weight: 400; line-height: 1.6; color: #343A40;">This is an example of body text. It is clear, legible, and uses the primary text color for optimal readability.</div>
+                <p><strong>Labels / Secondary Text:</strong> 14px, Regular (400), Line Height 1.5, Color #6C757D</p>
+                <div class="component-example" style="font-size: 14px; font-weight: 400; line-height: 1.5; color: #6C757D;">This is a label or secondary text.</div>
+                <p><strong>Button Text:</strong> 16px, Medium (500) or Semi-Bold (600), Line Height 1</p>
+                <div class="component-example"><button class="btn btn-primary">Button Text</button></div>
+                <p><strong>Caption / Small Text:</strong> 12px, Regular (400), Line Height 1.4, Color #6C757D</p>
+                <div class="component-example" style="font-size: 12px; font-weight: 400; line-height: 1.4; color: #6C757D;">This is a caption or small print text.</div>
+            </article>
+
+            <article id="spacing">
+                <h3>4. Spacing and Layout Grid Principles</h3>
+                <p>Base Unit: <strong>8px</strong>. Common Spacing Values:</p>
+                <ul>
+                    <li>xs (Extra Small): 4px</li>
+                    <li>sm (Small): 8px</li>
+                    <li>md (Medium): 16px</li>
+                    <li>lg (Large): 24px</li>
+                    <li>xl (Extra Large): 32px</li>
+                    <li>xxl (Extra Extra Large): 48px</li>
+                </ul>
+                <p><strong>Layout Grid (Mobile-First):</strong> Gutters: 16px (md) on mobile. Generous white space is encouraged.</p>
+            </article>
+        </section>
+
+        <section id="components">
+            <h2>Core UI Components</h2>
+
+            <article id="buttons">
+                <h3>5.1 Buttons</h3>
+                <p>General Styling: Border Radius 4px or 8px. Padding: 12px vertical, 24px horizontal. Font Weight: Semi-Bold (600).</p>
+                <h4>Primary Button</h4>
+                <div class="component-example">
+                    <button class="btn btn-primary">Primary Action</button>
+                    <button class="btn btn-primary" disabled>Disabled</button>
+                </div>
+                <pre><code>&lt;button class="btn btn-primary"&gt;Primary Action&lt;/button&gt;
+&lt;button class="btn btn-primary" disabled&gt;Disabled&lt;/button&gt;</code></pre>
+
+                <h4>Secondary Button</h4>
+                <div class="component-example">
+                    <button class="btn btn-secondary">Secondary Action</button>
+                    <button class="btn btn-secondary" disabled>Disabled</button>
+                </div>
+                <pre><code>&lt;button class="btn btn-secondary"&gt;Secondary Action&lt;/button&gt;
+&lt;button class="btn btn-secondary" disabled&gt;Disabled&lt;/button&gt;</code></pre>
+
+                <h4>Tertiary/Text Button</h4>
+                <div class="component-example">
+                    <button class="btn btn-tertiary">Text Button</button>
+                    <button class="btn btn-tertiary" disabled>Disabled</button>
+                </div>
+                <pre><code>&lt;button class="btn btn-tertiary"&gt;Text Button&lt;/button&gt;
+&lt;button class="btn btn-tertiary" disabled&gt;Disabled&lt;/button&gt;</code></pre>
+            </article>
+
+            <article id="form-fields">
+                <h3>5.2 Form Fields</h3>
+                <p>General Styling: Background #FFFFFF, Border 1px solid #CED4DA, Border Radius 4px or 8px, Padding 12px.</p>
+                <h4>Input Field</h4>
+                <div class="component-example form-input-example-container">
+                    <div>
+                        <label for="ex-email">Email Address</label>
+                        <input type="email" id="ex-email" class="form-input" placeholder="you@example.com">
+                        <p class="helper-message">This is some helper text.</p>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <label for="ex-email-error">Email Address (Error)</label>
+                        <input type="email" id="ex-email-error" class="form-input form-input-error" value="invalid-email" placeholder="you@example.com">
+                        <p class="error-message">Please enter a valid email.</p>
+                    </div>
+                     <div style="margin-top: 16px;">
+                        <label for="ex-email-disabled">Email Address (Disabled)</label>
+                        <input type="email" id="ex-email-disabled" class="form-input" placeholder="you@example.com" disabled>
+                    </div>
+                </div>
+                <pre><code>&lt;div&gt;
+  &lt;label for="email"&gt;Email Address&lt;/label&gt;
+  &lt;input type="email" id="email" class="form-input" placeholder="you@example.com"&gt;
+  &lt;p class="helper-message"&gt;Helper text.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+  &lt;label for="email-error"&gt;Email (Error)&lt;/label&gt;
+  &lt;input type="email" id="email-error" class="form-input form-input-error" value="invalid"&gt;
+  &lt;p class="error-message"&gt;Error message.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+            </article>
+
+            <article id="modals">
+                <h3>5.3 Modals</h3>
+                <p>Styling: Overlay rgba(52, 58, 64, 0.6), Container #FFFFFF background, 8px/12px radius, 24px/32px padding.</p>
+                <div class="component-example">
+                    <div class="modal-example-overlay">
+                        <div class="modal-example-container">
+                            <div class="modal-example-header">
+                                <h3>Modal Title</h3>
+                                <button class="modal-example-close-button">&times;</button>
+                            </div>
+                            <div class="modal-example-content">
+                                <p>This is the modal content area. It can contain forms, messages, or other information requiring focused user attention.</p>
+                            </div>
+                            <div class="modal-example-footer">
+                                <button class="btn btn-secondary">Cancel</button>
+                                <button class="btn btn-primary">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <pre><code>&lt;!-- Conceptual Structure --&gt;
+&lt;div class="modal-overlay"&gt;
+  &lt;div class="modal-container"&gt;
+    &lt;div class="modal-header"&gt;...&lt;/div&gt;
+    &lt;div class="modal-content"&gt;...&lt;/div&gt;
+    &lt;div class="modal-footer"&gt;...&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+            </article>
+
+            <article id="toasts">
+                <h3>5.4 Toast Notifications</h3>
+                <p>Styling: Fixed position, colored background based on type, white text, 4px/8px radius, 12px/16px padding.</p>
+                <div class="component-example">
+                    <div class="toast-example toast-example-success"><span>✔</span> <span>Action was successful!</span></div>
+                    <div class="toast-example toast-example-error"><span>✖</span> <span>An error occurred.</span></div>
+                    <div class="toast-example toast-example-warning"><span>⚠</span> <span>This is a warning.</span></div>
+                    <div class="toast-example toast-example-info"><span>ℹ</span> <span>Some information for you.</span></div>
+                </div>
+                <pre><code>&lt;div class="toast toast-success"&gt;
+  &lt;span&gt;✔&lt;/span&gt; 
+  &lt;span&gt;Action was successful!&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+            </article>
+
+            <article id="list-items-cards">
+                <h3>5.5 List Items & Cards</h3>
+                <h4>List Item</h4>
+                <div class="component-example" style="padding:0;">
+                    <div class="list-item-example">Notification or Menu Item 1</div>
+                    <div class="list-item-example">Another Item with a longer text</div>
+                    <div class="list-item-example">Last Item in the list</div>
+                </div>
+                <pre><code>&lt;div class="list-item"&gt;Item Content&lt;/div&gt;</code></pre>
+                
+                <h4>Card</h4>
+                <div class="component-example">
+                    <div class="card-example">
+                        <img src="https://via.placeholder.com/300x150.png?text=Court+Image" alt="Court Thumbnail">
+                        <h3>Court Name Example</h3>
+                        <p>Surface: Clay, Outdoor</p>
+                        <p class="card-highlight">Next Available: Today, 3:00 PM</p>
+                    </div>
+                </div>
+                <pre><code>&lt;div class="card"&gt;
+  &lt;img src="..." alt="..."&gt;
+  &lt;h3&gt;Card Title&lt;/h3&gt;
+  &lt;p&gt;Details...&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+            </article>
+
+            <article id="calendar-elements">
+                <h3>5.6 Calendar Widget Elements (Basic)</h3>
+                <h4>Date Cell Grid</h4>
+                <div class=

@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./CourtReserve_Backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./CourtReserve_Backend/instance:/app/instance # Persist SQLite database
+      # Mount the src directory for live code changes during development (optional)
+      # - ./CourtReserve_Backend/src:/app/src 
+    env_file:
+      - ./CourtReserve_Backend/.env # Load environment variables from .env file
+    depends_on:
+      - db # If using a separate database service like PostgreSQL
+    networks:
+      - courtreserve_network
+
+  frontend:
+    build:
+      context: ./courtreserve_prototypes
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80" # Map host port 8080 to container port 80 (Nginx default)
+    depends_on:
+      - backend
+    networks:
+      - courtreserve_network
+
+  db: # Example for PostgreSQL, uncomment and configure if switching from SQLite
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: "courtreserve_user"
+      POSTGRES_PASSWORD: "courtreserve_password"
+      POSTGRES_DB: "courtreserve_db"
+    ports:
+      - "5432:5432"
+    networks:
+      - courtreserve_network
+
+volumes:
+  postgres_data: # For PostgreSQL persistence
+
+networks:
+  courtreserve_network:
+    driver: bridge
+
