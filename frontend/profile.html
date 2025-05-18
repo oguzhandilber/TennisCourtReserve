@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - My Profile</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Page-specific styles for Profile */
+        .profile-container {
+            padding: 24px 16px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 3px solid #00A79D;
+            /* Vibrant Teal border */
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 14px;
+            color: #6C757D;
+            margin-bottom: 16px;
+        }
+
+        .profile-details .detail-item {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .profile-details .detail-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .profile-details .detail-label {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+
+        .profile-details .detail-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .profile-actions {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .profile-actions .btn {
+            margin-bottom: 12px;
+        }
+
+        /* Edit Profile Modal Styles */
+        .modal-body .form-group {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="dashboard.html" class="nav-icon" style="text-decoration:none; font-size: 20px;">&larr;</a>
+            <!-- Back Arrow -->
+            <div class="logo">My Profile</div>
+            <div class="nav-icon"></div> <!-- Empty div for alignment -->
+        </header>
+
+        <main class="profile-container">
+            <div class="profile-header">
+                <img src="https://via.placeholder.com/100x100.png?text=Avatar" alt="User Avatar" class="profile-avatar"
+                    id="user-avatar">
+                <h1 class="profile-name" id="user-full-name">Loading...</h1>
+                <p class="profile-role" id="user-role"></p>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-item">
+                    <div class="detail-label">Email Address</div>
+                    <div class="detail-value" id="user-email"></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Phone Number</div>
+                    <div class="detail-value" id="user-phone-number">N/A</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Skill Level</div>
+                    <div class="detail-value" id="user-skill-level">N/A</div>
+                </div>
+                <!-- Add more details as needed -->
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn btn-primary btn-full-width" onclick="openEditProfileModal()">Edit
+                    Profile</button>
+                <button class="btn btn-secondary btn-full-width" onclick="logout()">Log Out</button>
+            </div>
+        </main>
+
+        <!-- Edit Profile Modal -->
+        <div class="modal-overlay" id="edit-profile-modal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Edit Profile</h3>
+                    <button class="modal-close-btn" onclick="closeEditProfileModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-profile-form">
+                        <div class="form-group">
+                            <label for="edit-full-name">Full Name</label>
+                            <input type="text" id="edit-full-name" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-email">Email Address</label>
+                            <input type="email" id="edit-email" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone-number">Phone Number</label>
+                            <input type="tel" id="edit-phone-number" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-skill-level">Skill Level</label>
+                            <input type="text" id="edit-skill-level" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-profile-picture-url">Profile Picture URL</label>
+                            <input type="url" id="edit-profile-picture-url" class="form-input">
+                        </div>
+                        <!-- Add more editable fields as needed -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeEditProfileModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="saveProfileChanges()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="toast-notification" class="toast">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:5000/api";
+
+        const userAvatarEl = document.getElementById("user-avatar");
+        const userFullNameEl = document.getElementById("user-full-name");
+        const userRoleEl = document.getElementById("user-role");
+        const userEmailEl = document.getElementById("user-email");
+        const userPhoneNumberEl = document.getElementById("user-phone-number");
+        const userSkillLevelEl = document.getElementById("user-skill-level");
+
+        const toastNotification = document.getElementById("toast-notification");
+        const toastMessage = document.getElementById("toast-message");
+
+        const editProfileModal = document.getElementById("edit-profile-modal");
+        const editProfileForm = document.getElementById("edit-profile-form");
+
+        let currentUserData = null; // To store current user data for populating the form
+
+        function getAuthToken() {
+            return localStorage.getItem("access_token");
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = getAuthToken();
+            const headers = {
+                ...options.headers,
+                "Content-Type": "application/json",
+            };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (response.status === 401) { // Unauthorized
+                    showToast("Session expired. Please log in again.", true);
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_info"); // Corrected from user_info to user
+                    localStorage.removeItem("user");
+                    window.location.href = "signup_login.html";
+                    return null;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Request failed with status: " + response.status }));
+                    showToast(errorData.error || errorData.message || `Error: ${response.status}`, true);
+                    return null;
+                }
+                if (response.status === 204) { // No Content
+                    return { success: true };
+                }
+                return response.json();
+            } catch (error) {
+                console.error("API Fetch Error:", error);
+                showToast("Network error or server unavailable.", true);
+                return null;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Check if user is logged in
+            if (!getAuthToken()) {
+                window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
+                return;
+            }
+
+            await loadUserProfile();
+        });
+
+        async function loadUserProfile() {
+            try {
+                const user = await fetchWithAuth(`${API_BASE_URL}/users/me`);
+
+                if (user) {
+                    currentUserData = user; // Store for edit form
+                    userAvatarEl.src = user.profile_picture_url || "https://via.placeholder.com/100x100.png?text=Avatar";
+                    userFullNameEl.textContent = user.full_name || "User";
+                    userRoleEl.textContent = user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "";
+                    userEmailEl.textContent = user.email || "";
+                    userPhoneNumberEl.textContent = user.phone_number || "N/A";
+                    userSkillLevelEl.textContent = user.skill_level || "N/A";
+                } else {
+                    showToast("Failed to load user profile.", true);
+                    userFullNameEl.textContent = "Error loading profile";
+                }
+            } catch (error) {
+                console.error("Error loading user profile:", error);
+                showToast("Error loading user profile.", true);
+                userFullNameEl.textContent = "Error loading profile";
+            }
+        }
+
+        function openEditProfileModal() {
+            if (!currentUserData) {
+                showToast("User data not loaded yet. Please wait.", true);
+                return;
+            }
+            // Populate the form
+            document.getElementById("edit-full-name").value = currentUserData.full_name || "";
+            document.getElementById("edit-email").value = currentUserData.email || "";
+            document.getElementById("edit-phone-number").value = currentUserData.phone_number || "";
+            document.getElementById("edit-skill-level").value = currentUserData.skill_level || "";
+            document.getElementById("edit-profile-picture-url").value = currentUserData.profile_picture_url || "";
+
+            editProfileModal.style.display = "flex";
+        }
+
+        function closeEditProfileModal() {
+            editProfileModal.style.display = "none";
+        }
+
+        async function saveProfileChanges() {
+            const updatedData = {
+                full_name: document.getElementById("edit-full-name").value,
+                email: document.getElementById("edit-email").value,
+                phone_number: document.getElementById("edit-phone-number").value,
+                skill_level: document.getElementById("edit-skill-level").value,
+                profile_picture_url: document.getElementById("edit-profile-picture-url").value
+            };
+
+            const payload = {};
+            for (const key in updatedData) {
+                if (updatedData[key] !== null && updatedData[key] !== undefined && updatedData[key] !== "" && updatedData[key] !== currentUserData[key]) {
+                    payload[key] = updatedData[key];
+                } else if (updatedData[key] === "" && currentUserData[key] !== null && currentUserData[key] !== undefined && currentUserData[key] !== "") {
+                    // If field is cleared in form, explicitly send null to clear it if backend supports it
+                    payload[key] = null;
+                }
+            }
+
+            if (Object.keys(payload).length === 0) {
+                showToast("No changes to save.", false);
+                closeEditProfileModal();
+                return;
+            }
+
+            const result = await fetchWithAuth(`${API_BASE_URL}/users/me`, {
+                method: "PUT",
+                body: JSON.stringify(payload)
+            });
+
+            if (result && result.user) {
+                showToast("Profile updated successfully!");
+                closeEditProfileModal();
+                await loadUserProfile(); // Reload profile to show changes
+                // Update user data in localStorage
+                localStorage.setItem("user", JSON.stringify(result.user));
+            } else {
+                showToast(result ? (result.message || "Failed to update profile.") : "Failed to update profile.", true);
+            }
+        }
+
+
+        function logout() {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            localStorage.removeItem("user");
+            window.location.href = "signup_login.html";
+        }
+
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            toastNotification.className = isError ? "toast error show" : "toast show";
+            setTimeout(() => {
+                toastNotification.className = toastNotification.className.replace("show", "");
+            }, 3000); // Hide after 3 seconds
+        }
+
+    </script>
+</body>
+
+</html>

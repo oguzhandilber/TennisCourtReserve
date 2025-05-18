@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - Trainer Portal</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Page-specific styles for Trainer Portal */
+        .portal-header {
+            padding: 24px 16px;
+            background-color: #27677A;
+            /* Deep Aqua */
+            color: #FFFFFF;
+        }
+
+        .portal-header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+            color: #FFFFFF;
+        }
+
+        .portal-header p {
+            font-size: 16px;
+            margin-bottom: 0;
+            color: #E0F7F6;
+            /* Light teal tint for subtext */
+        }
+
+        .request-list .card {
+            border-left: 4px solid #FFC107;
+            /* Amber Yellow for pending requests */
+            margin-bottom: 16px;
+        }
+
+        .request-list .card.approved {
+            border-left-color: #28A745;
+            /* Forest Green for approved */
+        }
+
+        .request-list .card.declined {
+            border-left-color: #DC3545;
+            /* Crimson Red for declined */
+        }
+
+        .request-details h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .request-details p {
+            font-size: 14px;
+            margin-bottom: 2px;
+            color: #6C757D;
+        }
+
+        .request-details .player-name {
+            font-weight: 500;
+            color: #343A40;
+        }
+
+        .request-note {
+            font-size: 13px;
+            color: #343A40;
+            background-color: #F8F9FA;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            border: 1px solid #E9ECEF;
+        }
+
+        .request-note strong {
+            color: #27677A;
+        }
+
+        .request-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            /* Spacing between buttons */
+            justify-content: flex-end;
+        }
+
+        .request-actions .btn {
+            padding: 8px 16px;
+            /* Smaller buttons for actions */
+            font-size: 14px;
+        }
+
+        .btn-approve {
+            background-color: #28A745;
+            /* Forest Green */
+            color: #FFFFFF;
+        }
+
+        .btn-approve:hover {
+            background-color: #218838;
+        }
+
+        .btn-decline {
+            background-color: #DC3545;
+            /* Crimson Red */
+            color: #FFFFFF;
+        }
+
+        .btn-decline:hover {
+            background-color: #C82333;
+        }
+
+        .no-requests {
+            text-align: center;
+            padding: 32px;
+            color: #6C757D;
+        }
+
+        /* Filter/Sort Tabs */
+        .filter-tabs {
+            display: flex;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #E9ECEF;
+            background-color: #FFFFFF;
+            padding: 0 16px;
+        }
+
+        .filter-tab {
+            padding: 12px 16px;
+            cursor: pointer;
+            color: #6C757D;
+            /* Medium Grey */
+            font-weight: 500;
+            font-size: 14px;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .filter-tab:hover {
+            color: #27677A;
+        }
+
+        .filter-tab.active {
+            color: #00A79D;
+            /* Vibrant Teal */
+            border-bottom-color: #00A79D;
+            /* Vibrant Teal */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="dashboard.html" class="logo">CourtReserve</a> <!-- Or link to a trainer specific dashboard -->
+            <div class="nav-icon" onclick="openTrainerMenu()">⚙️</div> <!-- Settings/Menu Icon -->
+        </header>
+
+        <div class="portal-header">
+            <h1>Trainer Portal</h1>
+            <p>Manage booking requests and connect with players.</p>
+        </div>
+
+        <div class="filter-tabs">
+            <div class="filter-tab active" data-status="pending">Pending (<span id="pending-count">0</span>)</div>
+            <div class="filter-tab" data-status="confirmed">Approved (<span id="approved-count">0</span>)</div>
+            <div class="filter-tab" data-status="rejected">Declined (<span id="declined-count">0</span>)</div>
+            <div class="filter-tab" data-status="all">All (<span id="all-count">0</span>)</div>
+        </div>
+
+        <main>
+            <section class="dashboard-section request-list" id="request-list-section">
+                <!-- Pending Request 1 -->
+                <div class="card request-item" data-status="pending" data-id="req1">
+                    <div class="request-details">
+                        <h3>Court 3 - Central Park Courts</h3>
+                        <p>Player: <span class="player-name">Alex Johnson</span></p>
+                        <p>Requested Date: Tomorrow, May 14, 2025</p>
+                        <p>Requested Time: 10:00 AM - 11:00 AM</p>
+                        <div class="request-note">
+                            <strong>Note:</strong> "Looking forward to a good game! First time booking here."
+                        </div>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-tertiary btn-small"
+                            onclick="chatWithPlayer('Alex Johnson', 'req1')">Chat</button>
+                        <button class="btn btn-decline btn-small"
+                            onclick="processRequest('req1', 'declined')">Decline</button>
+                        <button class="btn btn-approve btn-small"
+                            onclick="processRequest('req1', 'approved')">Approve</button>
+                    </div>
+                </div>
+
+                <!-- Pending Request 2 -->
+                <div class="card request-item" data-status="pending" data-id="req2">
+                    <div class="request-details">
+                        <h3>Court 1 - Riverside Tennis Club</h3>
+                        <p>Player: <span class="player-name">Maria Garcia</span></p>
+                        <p>Requested Date: Today, May 13, 2025</p>
+                        <p>Requested Time: 4:00 PM - 5:00 PM</p>
+                        <!-- No note for this one -->
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-tertiary btn-small"
+                            onclick="chatWithPlayer('Maria Garcia', 'req2')">Chat</button>
+                        <button class="btn btn-decline btn-small"
+                            onclick="processRequest('req2', 'declined')">Decline</button>
+                        <button class="btn btn-approve btn-small"
+                            onclick="processRequest('req2', 'approved')">Approve</button>
+                    </div>
+                </div>
+
+                <!-- Approved Request Example (Initially hidden by filter) -->
+                <div class="card request-item approved" data-status="approved" data-id="req3" style="display:none;">
+                    <div class="request-details">
+                        <h3>Court 2 - Downtown Courts</h3>
+                        <p>Player: <span class="player-name">Sam Lee</span></p>
+                        <p>Requested Date: Yesterday, May 12, 2025</p>
+                        <p>Requested Time: 2:00 PM - 3:00 PM</p>
+                        <p style="color: #28A745; font-weight: 500; margin-top: 8px;">Status: Approved</p>
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-tertiary btn-small"
+                            onclick="chatWithPlayer('Sam Lee', 'req3')">Chat</button>
+                        <!-- No approve/decline for already processed -->
+                    </div>
+                </div>
+
+                <div class="no-requests" id="no-requests-message" style="display:none;">
+                    <p>No requests match the current filter.</p>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="#" class="nav-item active" onclick="alert('Trainer Dashboard/Requests view active')">
+                <span class="icon">📋</span> <!-- Placeholder icon -->
+                <span>Requests</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Trainer Schedule Page Coming Soon!')">
+                <span class="icon">🗓️</span> <!-- Placeholder icon -->
+                <span>My Schedule</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Messages Page Coming Soon!')">
+                <span class="icon">💬</span> <!-- Placeholder icon -->
+                <span>Messages</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Trainer Profile Page Coming Soon!')">
+                <span class="icon">👤</span> <!-- Placeholder icon -->
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Toast Notification Placeholder -->
+    <div id="toast-notification" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        const requestListSection = document.getElementById("request-list-section");
+        const noRequestsMsg = document.getElementById("no-requests-message");
+        const toastNotification = document.getElementById("toast-notification");
+        const toastMessage = document.getElementById("toast-message");
+        const pendingCountEl = document.getElementById("pending-count");
+        const approvedCountEl = document.getElementById("approved-count");
+        const declinedCountEl = document.getElementById("declined-count");
+        const allCountEl = document.getElementById("all-count");
+
+        let allRequests = []; // Store all fetched requests
+
+        function getAuthToken() {
+            return localStorage.getItem("access_token");
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = getAuthToken();
+            const headers = {
+                ...options.headers,
+                "Content-Type": "application/json",
+            };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (response.status === 401) { // Unauthorized
+                    showToast("Session expired. Please log in again.", true);
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_info");
+                    window.location.href = "signup_login.html";
+                    return null;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Request failed with status: " + response.status }));
+                    showToast(errorData.error || errorData.message || `Error: ${response.status}`, true);
+                    return null;
+                }
+                if (response.status === 204) { // No Content
+                    return { success: true };
+                }
+                return response.json();
+            } catch (error) {
+                console.error("API Fetch Error:", error);
+                showToast("Network error or server unavailable.", true);
+                return null;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Check if user is logged in and is a trainer (basic check, backend should enforce)
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            if (!getAuthToken() || user.role !== 'trainer') {
+                // Redirect to dashboard or show an error if not authorized
+                window.location.href = "dashboard.html"; // Or a dedicated unauthorized page
+                return;
+            }
+
+            await loadRequests();
+
+            // Set up event listeners for tabs
+            document.querySelectorAll(".filter-tab").forEach(tab => {
+                tab.addEventListener("click", () => {
+                    const status = tab.dataset.status;
+                    filterRequests(status, tab);
+                });
+            });
+        });
+
+        async function loadRequests() {
+            // Show loading state
+            requestListSection.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading requests...</p>
+                </div>
+            `;
+
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/trainer/bookings`);
+
+                if (result && result.bookings) {
+                    allRequests = result.bookings;
+                    updateCounts();
+                    // Initially filter to show pending requests
+                    filterRequests("pending", document.querySelector(".filter-tab.active"));
+                } else {
+                    requestListSection.innerHTML = `
+                        <div class="no-requests">
+                            <p>Could not load requests.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error loading requests:", error);
+                requestListSection.innerHTML = `
+                    <div class="no-requests">
+                        <p>Error loading requests.</p>
+                    </div>
+                `;
+            }
+        }
+
+
+        function updateCounts() {
+            const pendingCount = allRequests.filter(req => req.status === 'pending_approval').length;
+            const approvedCount = allRequests.filter(req => req.status === 'confirmed').length;
+            const declinedCount = allRequests.filter(req => req.status === 'rejected').length;
+            const allCount = allRequests.length;
+
+            pendingCountEl.textContent = pendingCount;
+            approvedCountEl.textContent = approvedCount;
+            declinedCountEl.textContent = declinedCount;
+            allCountEl.textContent = allCount;
+        }
+
+        function filterRequests(status, tabElement) {
+            requestListSection.innerHTML = ""; // Clear current list
+            let visibleCount = 0;
+
+            const filteredRequests = status === "all" ? allRequests : allRequests.filter(req => req.status === status);
+
+            if (filteredRequests.length === 0) {
+                requestListSection.appendChild(noRequestsMsg);
+                noRequestsMsg.style.display = "block";
+            } else {
+                noRequestsMsg.style.display = "none";
+                filteredRequests.forEach(request => {
+                    const requestCard = createRequestCard(request);
+                    requestListSection.appendChild(requestCard);
+                    visibleCount++;
+                });
+            }
+
+            document.querySelectorAll(".filter-tab").forEach(tab => tab.classList.remove("active"));
+            if (tabElement) {
+                tabElement.classList.add("active");
+            }
+        }
+
+        function createRequestCard(request) {
+            const card = document.createElement("div");
+            card.className = `card request-item ${request.status}`;
+            card.dataset.status = request.status;
+            card.dataset.id = request.id;
+
+            const requestDate = new Date(request.start_time);
+            const endTime = new Date(request.end_time);
+
+            let statusText = request.status.replace("_", " "); // Format status
+
+            card.innerHTML = `
+                <div class="request-details">
+                    <h3>${request.court_name || 'Court'}</h3>
+                    <p>Player: <span class="player-name">${request.player_name || 'N/A'}</span></p>
+                    <p>Requested Date: ${requestDate.toLocaleDateString()}</p>
+                    <p>Requested Time: ${requestDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    ${request.user_note ? `<div class="request-note"><strong>Note:</strong> ${request.user_note}</div>` : ''}
+                    ${request.status !== 'pending_approval' ? `<p style="color: ${request.status === 'confirmed' ? '#28A745' : '#DC3545'}; font-weight: 500; margin-top: 8px;">Status: ${statusText.charAt(0).toUpperCase() + statusText.slice(1)}</p>` : ''}
+                </div>
+                <div class="request-actions">
+                    <button class="btn btn-tertiary btn-small" onclick="chatWithPlayer('${request.player_name || 'Player'}', ${request.id})">Chat</button>
+                    ${request.status === 'pending_approval' ? `
+                        <button class="btn btn-decline btn-small" onclick="processRequest(${request.id}, 'rejected')">Decline</button>
+                        <button class="btn btn-approve btn-small" onclick="processRequest(${request.id}, 'confirmed')">Approve</button>
+                    ` : ''}
+                </div>
+            `;
+            return card;
+        }
+
+        async function processRequest(requestId, newStatus) {
+            const endpoint = `/trainer/bookings/${requestId}/${newStatus === 'confirmed' ? 'approve' : 'decline'}`;
+            const result = await fetchWithAuth(`${API_BASE_URL}${endpoint}`, { method: "PUT" });
+
+            if (result && result.success) {
+                showToast(`Request ${requestId} has been ${newStatus}.`, newStatus === "confirmed" ? "success" : "error");
+                // Update the status of the request in the allRequests array
+                const requestIndex = allRequests.findIndex(req => req.id === requestId);
+                if (requestIndex !== -1) {
+                    allRequests[requestIndex].status = newStatus;
+                    updateCounts();
+                    // Re-render the current filtered list
+                    const currentFilter = document.querySelector(".filter-tab.active").dataset.status;
+                    filterRequests(currentFilter, document.querySelector(".filter-tab.active"));
+                } else {
+                    // If request not found in array, just reload all requests
+                    loadRequests();
+                }
+            } else {
+                showToast(`Failed to ${newStatus} request ${requestId}.`, true);
+            }
+        }
+
+        function chatWithPlayer(playerName, requestId) {
+            alert(`Opening chat with ${playerName} regarding request ${requestId} (Placeholder).`);
+            // Navigation to a chat interface would happen here.
+        }
+
+        function openTrainerMenu() {
+            alert("Trainer menu/settings would open here!");
+        }
+
+        function showToast(message, type = "info") {
+            toastMessage.textContent = message;
+            toastNotification.className = "toast show"; // Reset classes
+            if (type === "success") toastNotification.classList.add("toast-success");
+            else if (type === "error") toastNotification.classList.add("toast-error");
+            else if (type === "warning") toastNotification.classList.add("toast-warning");
+            else toastNotification.classList.add("toast-info");
+
+            setTimeout(() => {
+                toastNotification.classList.remove("show");
+            }, 3000);
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - Welcome</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Page-specific styles for Landing Page */
+        .hero-section {
+            background-color: #27677A; /* Deep Aqua for a calming but inviting hero */
+            color: #FFFFFF;
+            padding: 48px 24px;
+            text-align: center;
+            min-height: 300px; /* Ensure hero has some height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-section h1 {
+            font-size: 36px; /* Larger for hero */
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+        }
+        .hero-section p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            max-width: 600px;
+            color: #F8F9FA; /* Cloud White for softer text on dark bg */
+            line-height: 1.7;
+        }
+        .features-overview {
+            padding: 32px 16px;
+            background-color: #FFFFFF;
+        }
+        .features-overview h2 {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #343A40;
+        }
+        .feature-item {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .feature-icon {
+            font-size: 40px; /* Placeholder for actual icons */
+            color: #00A79D; /* Vibrant Teal */
+            margin-bottom: 12px;
+        }
+        .feature-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #343A40;
+            margin-bottom: 8px;
+        }
+        .feature-item p {
+            font-size: 14px;
+            color: #6C757D;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="landing_page.html" class="logo">CourtReserve</a>
+            <!-- Hamburger Menu Icon (functional if JS added) -->
+            <div class="nav-icon" onclick="toggleNav()">&#9776;</div>
+        </header>
+
+        <main>
+            <section class="hero-section">
+                <h1>Book Your Court, Effortlessly.</h1>
+                <p>Find, book, and manage tennis court reservations in your community with ease. Get started in seconds!</p>
+                <a href="signup_login.html" class="btn btn-primary btn-full-width" style="max-width: 300px;">Book a Court Now</a>
+            </section>
+
+            <section class="features-overview">
+                <h2>Why Choose CourtReserve?</h2>
+                <div class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+                    <div class="feature-item">
+                        <div class="feature-icon">📅</div> <!-- Placeholder icon -->
+                        <h3>Easy Scheduling</h3>
+                        <p>View court availability and book your preferred slot in just a few taps.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">✅</div> <!-- Placeholder icon -->
+                        <h3>Trainer Approved</h3>
+                        <p>Seamless approval process for bookings managed by community trainers.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🤝</div> <!-- Placeholder icon -->
+                        <h3>Community Focused</h3>
+                        <p>Connect with players and trainers in your local tennis community.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2025 CourtReserve. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Basic JS for placeholder nav toggle -->
+    <script>
+        function toggleNav() {
+            alert("Navigation menu would appear here!");
+        }
+
+        // Smooth scroll for anchor links (if any added later)
+        document.querySelectorAll("a[href^=\"#\"]").forEach(anchor => {
+            anchor.addEventListener("click", function (e) {
+                if (this.getAttribute("href") !== "#" && document.querySelector(this.getAttribute("href"))) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute("href")).scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

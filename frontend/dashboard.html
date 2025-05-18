@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - Dashboard</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Page-specific styles for Dashboard */
+        .dashboard-header {
+            padding: 24px 16px;
+            background-color: #00A79D; /* Vibrant Teal */
+            color: #FFFFFF;
+        }
+        .dashboard-header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+            color: #FFFFFF;
+        }
+        .dashboard-header p {
+            font-size: 16px;
+            margin-bottom: 0;
+            color: #E0F7F6; /* Light teal tint for subtext */
+        }
+
+        .dashboard-section {
+            margin-bottom: 32px;
+        }
+        .dashboard-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #E9ECEF; /* Light Grey */
+        }
+
+        .booking-list .card {
+            border-left: 4px solid #00A79D; /* Vibrant Teal for confirmed */
+        }
+        .booking-list .card.pending {
+            border-left-color: #FFC107; /* Amber Yellow for pending */
+        }
+        .booking-list .card.declined {
+            border-left-color: #DC3545; /* Red for declined */
+        }
+        .booking-list .card.cancelled_by_user {
+            border-left-color: #6C757D; /* Medium Grey for cancelled */
+        }
+        .booking-list .card h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .booking-list .card p {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .booking-status {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 8px;
+            text-transform: capitalize;
+        }
+        .booking-status.confirmed {
+            background-color: #E0F7F6; /* Light Teal */
+            color: #007A70; /* Darker Teal */
+        }
+        .booking-status.pending {
+            background-color: #FFF8E1; /* Light Yellow */
+            color: #E6A800; /* Darker Yellow */
+        }
+        .booking-status.declined {
+            background-color: #F8D7DA; /* Light Red */
+            color: #721C24; /* Darker Red */
+        }
+        .booking-status.cancelled_by_user, .booking-status.cancelled_by_trainer {
+            background-color: #E9ECEF; /* Light Grey */
+            color: #343A40; /* Dark Grey */
+        }
+
+        .calendar-placeholder {
+            background-color: #E9ECEF;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            color: #6C757D;
+            margin-bottom: 24px;
+        }
+
+        .quick-actions .btn {
+            margin-bottom: 12px;
+        }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #E9ECEF; /* Light Grey */
+            background-color: #FFFFFF;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #6C757D; /* Medium Grey */
+            font-size: 12px;
+        }
+        .nav-item.active {
+            color: #00A79D; /* Vibrant Teal */
+        }
+        .nav-item .icon {
+            font-size: 24px; /* Placeholder for actual icons */
+            margin-bottom: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="landing_page.html" class="logo">CourtReserve</a>
+            <div class="nav-icon" onclick="openNotifications()">🔔 <span id="notification-count" style="font-size:10px; background-color: #DC3545; color: white; border-radius:50%; padding: 2px 5px; position:relative; top: -8px; right: 5px;">0</span></div>
+        </header>
+
+        <div class="dashboard-header">
+            <h1 id="welcome-message">Welcome!</h1>
+            <p>Here’s what’s happening with your court time.</p>
+        </div>
+
+        <main>
+            <section class="dashboard-section quick-actions">
+                <h2>Quick Actions</h2>
+                <a href="court_listing.html" class="btn btn-primary btn-full-width">Find & Book a Court</a>
+            </section>
+
+            <section class="dashboard-section upcoming-bookings">
+                <h2>Upcoming Bookings</h2>
+                <div class="booking-list" id="booking-list-container">
+                    <!-- Bookings will be dynamically inserted here -->
+                    <p class="secondary-text" id="no-bookings-message">Loading bookings...</p>
+                </div>
+            </section>
+
+            <section class="dashboard-section calendar-view">
+                <h2>Your Schedule</h2>
+                <div class="calendar-placeholder">
+                    <p>Interactive Calendar View Coming Soon!</p>
+                    <p>(Shows booked slots, pending, and available times)</p>
+                </div>
+            </section>
+            
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item active">
+                <span class="icon">🏠</span> <!-- Placeholder icon -->
+                <span>Home</span>
+            </a>
+            <a href="court_listing.html" class="nav-item">
+                <span class="icon">🎾</span> <!-- Placeholder icon -->
+                <span>Courts</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert("Bookings Page Coming Soon!")">
+                <span class="icon">📅</span> <!-- Placeholder icon -->
+                <span>Bookings</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert("Messages Page Coming Soon!")">
+                <span class="icon">💬</span> <!-- Placeholder icon -->
+                <span>Messages</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert("Profile Page Coming Soon!")">
+                <span class="icon">👤</span> <!-- Placeholder icon -->
+                <span>Profile</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:5000";
+        const welcomeMessageElement = document.getElementById("welcome-message");
+        const bookingListContainer = document.getElementById("booking-list-container");
+        const noBookingsMessageElement = document.getElementById("no-bookings-message");
+        const notificationCountElement = document.getElementById("notification-count");
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const accessToken = localStorage.getItem("accessToken");
+            const userString = localStorage.getItem("user");
+
+            if (!accessToken || !userString) {
+                // If no token or user info, redirect to login
+                window.location.href = "signup_login.html";
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userString);
+                if (user && user.full_name) {
+                    welcomeMessageElement.textContent = `Welcome, ${user.full_name.split(" ")[0]}!`;
+                } else {
+                    welcomeMessageElement.textContent = "Welcome!";
+                }
+                fetchBookings(accessToken);
+                fetchNotifications(accessToken); // Fetch notifications on load
+            } catch (e) {
+                console.error("Error parsing user data from localStorage", e);
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                localStorage.removeItem("user");
+                window.location.href = "signup_login.html";
+            }
+        });
+
+        async function fetchBookings(token) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/bookings?status=pending,approved`, { // Fetch pending and approved
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (response.status === 401) { // Unauthorized, token might be expired
+                    // Attempt to refresh token or redirect to login
+                    console.log("Access token expired or invalid, redirecting to login.");
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("refreshToken");
+                    localStorage.removeItem("user");
+                    window.location.href = "signup_login.html";
+                    return;
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Error fetching bookings:", errorData.message || response.statusText);
+                    noBookingsMessageElement.textContent = "Could not load bookings.";
+                    return;
+                }
+
+                const data = await response.json();
+                renderBookings(data.bookings);
+
+            } catch (error) {
+                console.error("Network error fetching bookings:", error);
+                noBookingsMessageElement.textContent = "Error connecting to server.";
+            }
+        }
+
+        function renderBookings(bookings) {
+            bookingListContainer.innerHTML = "";
+            if (!bookings || bookings.length === 0) {
+                noBookingsMessageElement.textContent = "You have no upcoming bookings. Find a court?";
+                bookingListContainer.appendChild(noBookingsMessageElement);
+                return;
+            }
+            noBookingsMessageElement.style.display = "none";
+
+            bookings.forEach(booking => {
+                const card = document.createElement("div");
+                card.classList.add("card", booking.status.toLowerCase());
+
+                const courtName = document.createElement("h3");
+                courtName.textContent = booking.court_name || `Court ID: ${booking.court_id}`;
+
+                const date = new Date(booking.start_time);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const formattedDate = date.toLocaleDateString(undefined, options);
+
+                const dateP = document.createElement("p");
+                dateP.classList.add("secondary-text");
+                dateP.textContent = `Date: ${formattedDate}`;
+
+                const timeP = document.createElement("p");
+                timeP.classList.add("secondary-text");
+                const startTime = new Date(booking.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const endTime = new Date(booking.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                timeP.textContent = `Time: ${startTime} - ${endTime}`;
+
+                const statusSpan = document.createElement("span");
+                statusSpan.classList.add("booking-status", booking.status.toLowerCase());
+                statusSpan.textContent = booking.status.replace("_", " ");
+
+                card.appendChild(courtName);
+                card.appendChild(dateP);
+                card.appendChild(timeP);
+                card.appendChild(statusSpan);
+                bookingListContainer.appendChild(card);
+            });
+        }
+
+        async function fetchNotifications(token) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications?unread_only=true`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateNotificationCount(data.notifications.length);
+                } else {
+                    console.error("Failed to fetch notifications");
+                    updateNotificationCount(0);
+                }
+            } catch (error) {
+                console.error("Error fetching notifications:", error);
+                updateNotificationCount(0);
+            }
+        }
+
+        function updateNotificationCount(count) {
+            if (count > 0) {
+                notificationCountElement.textContent = count;
+                notificationCountElement.style.display = "inline";
+            } else {
+                notificationCountElement.style.display = "none";
+            }
+        }
+
+        function openNotifications() {
+            // This would ideally navigate to a notifications page or open a modal
+            alert("Notifications center would open here! Mark all as read (Placeholder).");
+            markAllNotificationsAsRead();
+        }
+
+        async function markAllNotificationsAsRead() {
+            const token = localStorage.getItem("accessToken");
+            if (!token) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/notifications/read-all`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (response.ok) {
+                    updateNotificationCount(0);
+                } else {
+                    console.error("Failed to mark notifications as read");
+                }
+            } catch (error) {
+                console.error("Error marking notifications as read:", error);
+            }
+        }
+
+    </script>
+</body>
+</html>
+

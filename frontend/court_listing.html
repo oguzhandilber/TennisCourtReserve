@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - Find a Court</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Page-specific styles for Court Listing */
+        .filter-bar {
+            padding: 16px;
+            background-color: #F8F9FA;
+            /* Cloud White */
+            border-bottom: 1px solid #E9ECEF;
+            display: flex;
+            gap: 8px;
+            /* Spacing between filter elements */
+            align-items: center;
+        }
+
+        .filter-bar .form-input {
+            flex-grow: 1;
+            margin-bottom: 0;
+            /* Remove default form-group margin */
+        }
+
+        .filter-bar .btn-icon {
+            padding: 10px;
+            font-size: 18px;
+            background-color: #FFFFFF;
+            border: 1px solid #CED4DA;
+            color: #27677A;
+        }
+
+        .court-list-container {
+            padding: 16px;
+        }
+
+        .loading-skeleton-container .court-card {
+            background-color: #FFFFFF;
+        }
+
+        .loading-skeleton-container .court-card .skeleton-image {
+            width: 100%;
+            height: 150px;
+            background-color: #e0e0e0;
+            border-radius: 4px 4px 0 0;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .loading-skeleton-container .court-card-content .skeleton-text {
+            height: 1em;
+            margin-bottom: 0.75em;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .loading-skeleton-container .court-card-content .skeleton-text.title {
+            width: 70%;
+            height: 1.2em;
+        }
+
+        .loading-skeleton-container .court-card-content .skeleton-text.detail {
+            width: 50%;
+        }
+
+        .loading-skeleton-container .court-card-content .skeleton-text.availability {
+            width: 60%;
+            background-color: #d0e0d0;
+        }
+
+        /* Slightly different for visual cue */
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="dashboard.html" class="nav-icon" style="text-decoration:none; font-size: 20px;">&larr;</a>
+            <!-- Back Arrow -->
+            <div class="logo" style="margin: 0 auto; padding-left: 20px;">Find a Court</div> <!-- Centered Title -->
+            <div class="nav-icon" onclick="toggleFilters()">⚙️</div> <!-- Filter Icon -->
+        </header>
+
+        <div class="filter-bar">
+            <input type="text" class="form-input" placeholder="Search by court name or location...">
+            <button class="btn btn-icon" onclick="applySearch()" title="Search">🔍</button>
+        </div>
+
+        <!-- Hidden Advanced Filters Panel (example) -->
+        <div id="advanced-filters"
+            style="display:none; padding: 16px; background-color: #FFFFFF; border-bottom: 1px solid #E9ECEF;">
+            <h4>Advanced Filters</h4>
+            <div class="form-group">
+                <label for="surface-type">Surface Type</label>
+                <select id="surface-type" class="form-input">
+                    <option value="any">Any</option>
+                    <option value="hard">Hard</option>
+                    <option value="clay">Clay</option>
+                    <option value="grass">Grass</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="court-setting">Setting</label>
+                <select id="court-setting" class="form-input">
+                    <option value="any">Any</option>
+                    <option value="indoor">Indoor</option>
+                    <option value="outdoor">Outdoor</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-small" onclick="applyAdvancedFilters()">Apply Filters</button>
+        </div>
+
+        <main class="court-list-container">
+            <!-- Loading Skeleton Example (shown initially or during search) -->
+            <div id="loading-indicator" class="loading-skeleton-container" style="display: none;">
+                <div class="court-card">
+                    <div class="skeleton-image"></div>
+                    <div class="court-card-content">
+                        <div class="skeleton-text title"></div>
+                        <div class="skeleton-text detail"></div>
+                        <div class="skeleton-text detail"></div>
+                        <div class="skeleton-text availability"></div>
+                    </div>
+                </div>
+                <div class="court-card">
+                    <div class="skeleton-image"></div>
+                    <div class="court-card-content">
+                        <div class="skeleton-text title"></div>
+                        <div class="skeleton-text detail"></div>
+                        <div class="skeleton-text detail"></div>
+                        <div class="skeleton-text availability"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="court-list">
+                <!-- Court cards will be dynamically inserted here -->
+                <!-- No results message (hidden by default) -->
+                <div id="no-results" class="card" style="display:none; text-align:center; padding: 32px;">
+                    <p class="secondary-text">No courts found matching your criteria. Try adjusting your filters or
+                        search.</p>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <a href="court_listing.html" class="nav-item active">
+                <span class="icon">🎾</span>
+                <span>Courts</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Bookings Page Coming Soon!')">
+                <span class="icon">📅</span>
+                <span>Bookings</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Messages Page Coming Soon!')">
+                <span class="icon">💬</span>
+                <span>Messages</span>
+            </a>
+            <a href="#" class="nav-item" onclick="alert('Profile Page Coming Soon!')">
+                <span class="icon">👤</span>
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const courtList = document.getElementById("court-list");
+        const noResultsMessage = document.getElementById("no-results");
+        const advancedFiltersPanel = document.getElementById("advanced-filters");
+        const searchInput = document.querySelector(".filter-bar .form-input");
+        const surfaceTypeFilter = document.getElementById("surface-type");
+        const courtSettingFilter = document.getElementById("court-setting");
+
+
+        function toggleFilters() {
+            if (advancedFiltersPanel.style.display === "none") {
+                advancedFiltersPanel.style.display = "block";
+            } else {
+                advancedFiltersPanel.style.display = "none";
+            }
+        }
+
+        function showLoading() {
+            loadingIndicator.style.display = "block";
+            courtList.style.display = "none";
+            noResultsMessage.style.display = "none";
+        }
+
+        function hideLoading() {
+            loadingIndicator.style.display = "none";
+            courtList.style.display = "block"; // Or show no-results if applicable
+        }
+
+        function applySearch() {
+            const searchTerm = searchInput.value;
+            fetchCourts({ search: searchTerm });
+        }
+
+        function applyAdvancedFilters() {
+            const surface = surfaceTypeFilter.value === "any" ? "" : surfaceTypeFilter.value;
+            const setting = courtSettingFilter.value === "any" ? "" : courtSettingFilter.value;
+            fetchCourts({ surface_type: surface, setting: setting, search: searchInput.value });
+            toggleFilters(); // Hide filter panel after applying
+        }
+
+        // Initial state: hide loading indicator
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchCourts({}); // Fetch all courts initially
+        });
+
+        async function fetchCourts(filters = {}) {
+            showLoading();
+            const API_BASE_URL = "http://127.0.0.1:5000"; // Adjust if your backend is elsewhere
+
+            const queryParams = new URLSearchParams();
+            if (filters.search) queryParams.append("search", filters.search);
+            if (filters.surface_type) queryParams.append("surface_type", filters.surface_type);
+            if (filters.setting) queryParams.append("setting", filters.setting);
+
+            const queryString = queryParams.toString();
+            const fetchURL = `${API_BASE_URL}/api/courts${queryString ? `?${queryString}` : ""}`; // Ensure /api prefix
+
+            try {
+                // Assuming the /courts endpoint is already prefixed with /api in common_styles or backend setup
+                // If not, ensure API_BASE_URL includes /api or adjust fetchURL
+                const response = await fetch(fetchURL, { // Corrected to use fetchURL
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // Add Authorization header if required by your backend for this endpoint
+                        // "Authorization": `Bearer ${localStorage.getItem("access_token")}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error("Error fetching courts:", errorData.message || response.statusText);
+                    hideLoading();
+                    noResultsMessage.style.display = "block";
+                    noResultsMessage.querySelector("p").textContent = "Could not load courts.";
+                    return;
+                }
+
+                const data = await response.json();
+                renderCourts(data.courts);
+                hideLoading();
+
+            } catch (error) {
+                console.error("Network error fetching courts:", error);
+                hideLoading();
+                noResultsMessage.style.display = "block";
+                noResultsMessage.querySelector("p").textContent = "Error connecting to server.";
+            }
+        }
+
+        function renderCourts(courts) {
+            courtList.innerHTML = ""; // Clear existing content except no-results
+            if (!courts || courts.length === 0) {
+                noResultsMessage.style.display = "block";
+                noResultsMessage.querySelector("p").textContent = "No courts found.";
+                return;
+            }
+            noResultsMessage.style.display = "none";
+
+            courts.forEach(court => {
+                const courtCardHTML = `
+                    <a href="court_detail.html?courtId=${court.id}" style="text-decoration: none; color: inherit;">
+                        <article class="court-card">
+                            <img src="${court.image_url || 'https://via.placeholder.com/480x150.png?text=No+Image'}" alt="${court.name} Thumbnail" class="court-thumbnail">
+                            <div class="court-card-content">
+                                <h3>${court.name}</h3>
+                                <div class="court-details">
+                                    <span>${court.surface_type || 'N/A'}</span>
+                                    <span>${court.setting || 'N/A'}</span>
+                                    ${court.is_floodlit ? '<span>Floodlit</span>' : ''}
+                                </div>
+                                <p class="court-availability">Check availability on detail page</p>
+                            </div>
+                        </article>
+                    </a>
+                `;
+                courtList.insertAdjacentHTML('beforeend', courtCardHTML);
+            });
+        }
+
+    </script>
+</body>
+
+</html>

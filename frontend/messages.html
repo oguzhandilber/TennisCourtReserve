@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourtReserve - Messages</title>
+    <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <style>
+        /* Page-specific styles for Messages */
+        .messages-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            /* Adjust based on header height */
+        }
+
+        .chat-list-panel {
+            width: 300px;
+            /* Fixed width for chat list */
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            flex-shrink: 0;
+            /* Prevent shrinking */
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .chat-item.active {
+            background-color: #cfe2ff;
+            /* Light blue for active chat */
+            border-right: 3px solid #007bff;
+        }
+
+        .chat-item-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .chat-item-last-message {
+            font-size: 13px;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-window {
+            flex-grow: 1;
+            /* Take remaining space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            background-color: #ffffff;
+        }
+
+        .message-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column-reverse;
+            /* Show latest messages at the bottom */
+        }
+
+        .message-item {
+            margin-bottom: 12px;
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 16px;
+            word-wrap: break-word;
+        }
+
+        .message-item.sent {
+            align-self: flex-end;
+            background-color: #007bff;
+            /* Primary blue for sent messages */
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-item.received {
+            align-self: flex-start;
+            background-color: #e9ecef;
+            /* Light grey for received messages */
+            color: #212529;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-meta {
+            font-size: 10px;
+            margin-top: 4px;
+            text-align: right;
+            color: rgba(255, 255, 255, 0.7);
+            /* Lighter color for meta on sent */
+        }
+
+        .message-item.received .message-meta {
+            color: #6c757d;
+            /* Darker color for meta on received */
+            text-align: left;
+        }
+
+
+        .message-input-area {
+            padding: 12px 16px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+            background-color: #ffffff;
+        }
+
+        .message-input-area input {
+            flex-grow: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .message-input-area button {
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .empty-chat-state {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #6c757d;
+        }
+
+        .empty-chat-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <a href="dashboard.html" class="nav-icon" style="text-decoration:none; font-size: 20px;">&larr;</a>
+            <div class="logo">Messages</div>
+            <div class="nav-icon"></div> <!-- Empty div for alignment -->
+        </header>
+
+        <main class="messages-container">
+            <div class="chat-list-panel" id="chat-list-panel">
+                <!-- Chat items will be populated here -->
+                <div class="empty-state" style="padding: 20px;">
+                    <p>Loading chats...</p>
+                </div>
+            </div>
+
+            <div class="chat-window" id="chat-window">
+                <div class="empty-chat-state" id="empty-chat-state">
+                    <div class="empty-chat-state-icon">💬</div>
+                    <h3>Select a chat to start messaging</h3>
+                    <p>Choose a conversation from the left panel.</p>
+                </div>
+
+                <div class="chat-header" id="chat-header" style="display: none;">
+                    <!-- Chat partner name will be here -->
+                </div>
+
+                <div class="message-list" id="message-list" style="display: none;">
+                    <!-- Messages will be populated here -->
+                </div>
+
+                <div class="message-input-area" id="message-input-area" style="display: none;">
+                    <input type="text" id="message-input" placeholder="Type your message...">
+                    <button class="btn btn-primary" id="send-message-btn">Send</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Toast Notification Placeholder -->
+        <div id="toast-notification" class="toast">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://127.0.0.1:5000/api";
+        const SOCKET_URL = "http://127.0.0.1:5000";
+
+        const chatListPanel = document.getElementById("chat-list-panel");
+        const chatWindow = document.getElementById("chat-window");
+        const emptyChatState = document.getElementById("empty-chat-state");
+        const chatHeader = document.getElementById("chat-header");
+        const messageList = document.getElementById("message-list");
+        const messageInputArea = document.getElementById("message-input-area");
+        const messageInput = document.getElementById("message-input");
+        const sendMessageBtn = document.getElementById("send-message-btn");
+
+        const toastNotification = document.getElementById("toast-notification");
+        const toastMessage = document.getElementById("toast-message");
+
+        let socket = null;
+        let currentChatPartnerId = null;
+        let currentUser = null;
+
+        function getAuthToken() {
+            return localStorage.getItem("access_token");
+        }
+
+        async function fetchWithAuth(url, options = {}) {
+            const token = getAuthToken();
+            const headers = {
+                ...options.headers,
+                "Content-Type": "application/json",
+            };
+            if (token) {
+                headers["Authorization"] = `Bearer ${token}`;
+            }
+            try {
+                const response = await fetch(url, { ...options, headers });
+                if (response.status === 401) { // Unauthorized
+                    showToast("Session expired. Please log in again.", true);
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_info");
+                    window.location.href = "signup_login.html";
+                    return null;
+                }
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Request failed with status: " + response.status }));
+                    showToast(errorData.error || errorData.message || `Error: ${response.status}`, true);
+                    return null;
+                }
+                if (response.status === 204) { // No Content
+                    return { success: true };
+                }
+                return response.json();
+            } catch (error) {
+                console.error("API Fetch Error:", error);
+                showToast("Network error or server unavailable.", true);
+                return null;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = getAuthToken();
+            const userString = localStorage.getItem("user");
+
+            if (!token || !userString) {
+                window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
+                return;
+            }
+
+            try {
+                currentUser = JSON.parse(userString);
+            } catch (e) {
+                console.error("Error parsing user data from localStorage", e);
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("refreshToken");
+                localStorage.removeItem("user");
+                window.location.href = "signup_login.html";
+                return;
+            }
+
+            // Initialize WebSocket connection
+            initializeSocket();
+
+            // Load chat list
+            await loadChatList();
+
+            // Set up event listeners
+            sendMessageBtn.addEventListener("click", sendMessage);
+            messageInput.addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        function initializeSocket() {
+            try {
+                socket = io(SOCKET_URL, {
+                    query: { token: getAuthToken() } // Pass token during connection
+                });
+
+                socket.on('connect', () => {
+                    console.log('Connected to WebSocket server');
+                    // Server should handle authentication based on the token in query
+                });
+
+                socket.on('disconnect', () => {
+                    console.log('Disconnected from WebSocket server');
+                });
+
+                socket.on('connect_error', (error) => {
+                    console.error('Connection error:', error);
+                    showToast("WebSocket connection error.", true);
+                });
+
+                socket.on('authenticated', (data) => {
+                    console.log('Socket authenticated:', data);
+                    // Server confirms authentication
+                });
+
+                socket.on('authentication_error', (error) => {
+                    console.error('Socket authentication error:', error);
+                    showToast("WebSocket authentication failed. Please log in again.", true);
+                    // Optionally redirect to login
+                });
+
+                socket.on('new_message', (message) => {
+                    console.log('New message received:', message);
+                    handleNewMessage(message);
+                });
+
+            } catch (error) {
+                console.error('Error initializing socket:', error);
+                showToast("Error initializing WebSocket.", true);
+            }
+        }
+
+        async function loadChatList() {
+            chatListPanel.innerHTML = `
+                <div class="empty-state" style="padding: 20px;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading chats...</p>
+                </div>
+            `;
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/messages/chats`);
+
+                chatListPanel.innerHTML = ""; // Clear loading state
+
+                if (result && result.chats && result.chats.length > 0) {
+                    result.chats.forEach(chat => {
+                        const chatItemEl = document.createElement("div");
+                        chatItemEl.className = "chat-item";
+                        chatItemEl.dataset.contactId = chat.contact_id;
+                        chatItemEl.innerHTML = `
+                            <div class="chat-item-name">${chat.contact_name || `User ${chat.contact_id}`}</div>
+                            <div class="chat-item-last-message">${chat.last_message_content || 'No messages yet.'}</div>
+                        `;
+                        chatItemEl.addEventListener("click", () => openChat(chat.contact_id, chat.contact_name));
+                        chatListPanel.appendChild(chatItemEl);
+                    });
+                } else {
+                    chatListPanel.innerHTML = `
+                        <div class="empty-state" style="padding: 20px;">
+                            <div class="empty-state-icon">💬</div>
+                            <p>No chats yet.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error loading chat list:", error);
+                chatListPanel.innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <div class="empty-state-icon">❌</div>
+                        <p>Error loading chats.</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function openChat(contactId, contactName) {
+            currentChatPartnerId = contactId;
+            chatHeader.textContent = contactName || `User ${contactId}`;
+
+            // Show chat window, hide empty state
+            emptyChatState.style.display = "none";
+            chatHeader.style.display = "block";
+            messageList.style.display = "flex";
+            messageInputArea.style.display = "flex";
+
+            // Highlight active chat item
+            document.querySelectorAll(".chat-item").forEach(item => item.classList.remove("active"));
+            document.querySelector(`.chat-item[data-contact-id="${contactId}"]`).classList.add("active");
+
+            // Load message history
+            messageList.innerHTML = `
+                 <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading messages...</p>
+                </div>
+            `;
+
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/messages/chats/${contactId}`);
+
+                messageList.innerHTML = ""; // Clear loading state
+
+                if (result && result.messages && result.messages.length > 0) {
+                    result.messages.forEach(message => {
+                        appendMessage(message);
+                    });
+                    // Scroll to bottom
+                    messageList.scrollTop = messageList.scrollHeight;
+                } else {
+                    messageList.innerHTML = `
+                        <div class="empty-state">
+                            <p>No messages in this chat yet.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error loading message history:", error);
+                messageList.innerHTML = `
+                    <div class="empty-state">
+                        <p>Error loading messages.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function appendMessage(message) {
+            const messageItemEl = document.createElement("div");
+            messageItemEl.className = `message-item ${message.sender_id === currentUser.id ? 'sent' : 'received'}`;
+            messageItemEl.innerHTML = `
+                <div class="message-content">${message.content}</div>
+                <div class="message-meta">${new Date(message.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+            `;
+            // Append to the top for reverse column layout, or to bottom for normal
+            messageList.prepend(messageItemEl); // Use prepend for column-reverse
+        }
+
+
+        function sendMessage() {
+            const content = messageInput.value.trim();
+            if (content && currentChatPartnerId && socket && socket.connected) {
+                const messageData = {
+                    receiver_id: currentChatPartnerId,
+                    content: content,
+                    // booking_id: null // Add if linking messages to bookings
+                };
+                socket.emit("send_message", messageData);
+                messageInput.value = ""; // Clear input
+
+                // Optimistically add the message to the UI
+                const tempMessage = {
+                    id: Date.now(), // Temporary ID
+                    sender_id: currentUser.id,
+                    receiver_id: currentChatPartnerId,
+                    content: content,
+                    sent_at: new Date().toISOString(),
+                    is_read: false // Assuming sent messages are read by sender
+                };
+                appendMessage(tempMessage);
+                // Scroll to bottom
+                messageList.scrollTop = messageList.scrollHeight;
+
+            } else if (!socket || !socket.connected) {
+                showToast("WebSocket is not connected. Cannot send message.", true);
+            }
+        }
+
+        function handleNewMessage(message) {
+            // Check if the new message is for the currently open chat
+            if (currentChatPartnerId && (message.sender_id === currentChatPartnerId || message.receiver_id === currentChatPartnerId)) {
+                appendMessage(message);
+                // Scroll to bottom
+                messageList.scrollTop = messageList.scrollHeight;
+                // Optionally mark as read if the chat is open
+                // if (message.receiver_id === currentUser.id) {
+                //     socket.emit("mark_as_read", { message_id: message.id });
+                // }
+            } else {
+                // Update chat list item for the sender
+                loadChatList(); // Simple approach: reload the whole list
+                // Or more complex: find the chat item and update last message/unread count
+            }
+        }
+
+
+        function showToast(message, isError = false) {
+            toastMessage.textContent = message;
+            toastNotification.className = "toast show"; // Add 'show' class
+            if (isError) {
+                toastNotification.classList.add("error");
+            } else {
+                toastNotification.classList.remove("error");
+            }
+            setTimeout(() => {
+                toastNotification.className = toastNotification.className.replace(" show", "");
+            }, 3000);
+        }
+
+    </script>
+</body>
+
+</html>
