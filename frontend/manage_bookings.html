@@ -5,41 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourtReserve - Manage Bookings</title>
     <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .booking-management-item {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
+        /* Page-specific styles for Manage Bookings */
+        .booking-filters {
+            padding: 16px;
+            background-color: #f8f9fa;
             border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        .booking-list {
+            margin-top: 20px;
+        }
+        
+        .booking-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #6c757d; /* Default color */
         }
-        .booking-management-item h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 18px;
-            color: #333;
+        
+        .booking-card.pending {
+            border-left-color: #ffc107; /* Yellow for pending */
         }
-        .booking-details p {
-            margin: 4px 0;
+        
+        .booking-card.confirmed {
+            border-left-color: #28a745; /* Green for confirmed */
+        }
+        
+        .booking-card.rejected {
+            border-left-color: #dc3545; /* Red for rejected */
+        }
+        
+        .booking-card.cancelled {
+            border-left-color: #6c757d; /* Gray for cancelled */
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .booking-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #212529;
+        }
+        
+        .booking-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .booking-status.pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .booking-status.confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .booking-status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .booking-status.cancelled {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .booking-detail-item {
             font-size: 14px;
-            color: #555;
         }
-        .booking-details strong {
-            color: #333;
+        
+        .booking-detail-label {
+            color: #6c757d;
+            margin-bottom: 2px;
         }
-        .status-pending_approval { color: #ffc107; font-weight: bold; }
-        .status-confirmed { color: #28a745; font-weight: bold; }
-        .status-cancelled { color: #dc3545; font-weight: bold; }
-        .status-rejected { color: #dc3545; font-weight: bold; }
-        .status-completed { color: #6c757d; font-weight: bold; }
+        
+        .booking-detail-value {
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        
+        .booking-note {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        /* Modal styles for rejection reason */
+        .rejection-reason-textarea {
+            width: 100%;
+            min-height: 100px;
+            margin-top: 12px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
 
-        .actions button {
-            margin-top: 10px;
-            margin-right: 8px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .court-select-container {
-            margin-bottom: 20px;
+
+        .loading-container {
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
@@ -48,55 +197,92 @@
         <header class="app-header">
             <a href="dashboard.html" class="nav-icon" style="text-decoration:none; font-size: 20px;">&larr;</a>
             <div class="logo">Manage Bookings</div>
-            <a href="notifications.html" class="nav-icon">🔔</a> 
+            <div class="nav-icon"></div> <!-- Empty div for alignment -->
         </header>
 
-        <main id="main-content">
-            <div class="court-select-container">
-                <label for="court-select">Select Court to Manage:</label>
-                <select id="court-select" class="form-input" onchange="loadCourtBookings()">
-                    <option value="">-- Select a Court --</option>
-                    <!-- Options will be populated by JS -->
-                </select>
-            </div>
+        <main>
+            <section class="booking-filters">
+                <h2>Filters</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="court-filter">Court</label>
+                        <select id="court-filter">
+                            <option value="">All Courts</option>
+                            <!-- Courts will be populated here -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="status-filter">Status</label>
+                        <select id="status-filter">
+                            <option value="">All Statuses</option>
+                            <option value="pending_approval">Pending Approval</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date-filter">Date</label>
+                        <input type="date" id="date-filter">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="apply-filters-btn">Apply Filters</button>
+                <button class="btn btn-secondary" id="clear-filters-btn">Clear Filters</button>
+            </section>
 
-            <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px; display: none;" id="booking-filters">
-                <select id="status-filter" class="form-input" onchange="loadCourtBookings()">
-                    <option value="">All Statuses</option>
-                    <option value="pending_approval">Pending Approval</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="completed">Completed</option>
-                </select>
-                <input type="date" id="date-filter" class="form-input" onchange="loadCourtBookings()">
-            </div>
-
-            <div id="booking-list-container">
-                <p>Please select a court to view bookings.</p>
-            </div>
+            <section class="booking-list" id="booking-list">
+                <!-- Bookings will be populated here -->
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading bookings...</p>
+                </div>
+            </section>
         </main>
-    </div>
 
-    <div id="toast-notification" class="toast">
-        <span id="toast-message"></span>
+        <!-- Rejection Reason Modal -->
+        <div class="modal-overlay" id="rejection-modal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Provide Rejection Reason</h3>
+                    <button class="modal-close-btn" onclick="closeRejectionModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Please provide a reason for rejecting this booking request:</p>
+                    <textarea id="rejection-reason" class="rejection-reason-textarea" placeholder="e.g., Court maintenance scheduled, Trainer unavailable, etc."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeRejectionModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirm-reject-btn">Reject Booking</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast-notification" class="toast">
+            <span id="toast-message"></span>
+        </div>
     </div>
 
     <script>
         const API_BASE_URL = "http://127.0.0.1:5000/api";
-        const bookingListContainer = document.getElementById("booking-list-container");
-        const courtSelect = document.getElementById("court-select");
-        const bookingFilters = document.getElementById("booking-filters");
+        const bookingListEl = document.getElementById("booking-list");
+        const courtFilterEl = document.getElementById("court-filter");
+        const statusFilterEl = document.getElementById("status-filter");
+        const dateFilterEl = document.getElementById("date-filter");
+        const applyFiltersBtn = document.getElementById("apply-filters-btn");
+        const clearFiltersBtn = document.getElementById("clear-filters-btn");
+        
+        const rejectionModal = document.getElementById("rejection-modal");
+        const rejectionReasonEl = document.getElementById("rejection-reason");
+        const confirmRejectBtn = document.getElementById("confirm-reject-btn");
+        
         const toastNotification = document.getElementById("toast-notification");
         const toastMessage = document.getElementById("toast-message");
-        let managedCourts = [];
+        
+        let currentBookingId = null; // For tracking which booking is being rejected
+        let managedCourts = []; // To store courts managed by this court responsible
 
         function getAuthToken() {
             return localStorage.getItem("access_token");
-        }
-        function getUserInfo() {
-            const userInfo = localStorage.getItem("user_info");
-            return userInfo ? JSON.parse(userInfo) : null;
         }
 
         async function fetchWithAuth(url, options = {}) {
@@ -110,15 +296,15 @@
             }
             try {
                 const response = await fetch(url, { ...options, headers });
-                if (response.status === 401) {
+                if (response.status === 401) { // Unauthorized
                     showToast("Session expired. Please log in again.", true);
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("user_info");
-                    window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
+                    window.location.href = "signup_login.html";
                     return null;
                 }
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: "Request failed: " + response.status }));
+                    const errorData = await response.json().catch(() => ({ error: "Request failed with status: " + response.status }));
                     showToast(errorData.error || errorData.message || `Error: ${response.status}`, true);
                     return null;
                 }
@@ -134,185 +320,276 @@
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
-            const userInfo = getUserInfo();
-            if (!userInfo || (userInfo.role !== "court_responsible" && userInfo.role !== "admin")) {
-                showToast("You are not authorized to view this page.", true);
-                bookingListContainer.innerHTML = "<p>Access Denied. You must be a Court Responsible or Admin.</p>";
-                // Hide court selector if not authorized
-                document.querySelector('.court-select-container').style.display = 'none';
-                return;
-            }
+            // Check if user is logged in
             if (!getAuthToken()) {
                 window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
                 return;
             }
+            
+            // Check if user is a court responsible
+            const userInfo = JSON.parse(localStorage.getItem("user_info") || "{}");
+            if (userInfo.role !== "court_responsible") {
+                showToast("Only court responsible users can access this page.", true);
+                window.location.href = "dashboard.html";
+                return;
+            }
+            
+            // Load managed courts for filter dropdown
             await loadManagedCourts();
+            
+            // Load bookings with default filters
+            await loadBookings();
+            
+            // Set up event listeners
+            applyFiltersBtn.addEventListener("click", loadBookings);
+            clearFiltersBtn.addEventListener("click", clearFilters);
+            confirmRejectBtn.addEventListener("click", confirmRejectBooking);
         });
 
         async function loadManagedCourts() {
-            // Admins see all courts, Court Responsibles see their managed_courts
-            // For simplicity, this example assumes an endpoint that returns courts manageable by the current user.
-            // In a real app, the /api/users/me/managed-courts or similar would be ideal.
-            // As a fallback, we fetch all courts and filter if user is court_responsible but not admin.
-            const userInfo = getUserInfo();
-            const allCourts = await fetchWithAuth(`${API_BASE_URL}/courts`); 
-            
-            if (allCourts && Array.isArray(allCourts)) {
-                if (userInfo.role === "admin") {
-                    managedCourts = allCourts;
-                } else { // court_responsible - this part needs backend support to know which courts they manage
-                    // The current /api/courts endpoint returns is_followed_by_current_user, not if they manage it.
-                    // This is a simplification. Ideally, backend provides a list of courts the user manages.
-                    // For now, let's assume a court_responsible can manage ALL courts if no specific list is provided.
-                    // This needs to be refined with proper backend logic for managed_courts.
-                    // A temporary workaround: if the user is court_responsible, they can see all courts in the dropdown.
-                    // The actual authorization for approve/reject will happen on the backend per court.
-                    managedCourts = allCourts; 
-                }
-
-                if (managedCourts.length > 0) {
+            try {
+                const courts = await fetchWithAuth(`${API_BASE_URL}/courts`);
+                if (courts && courts.courts) {
+                    managedCourts = courts.courts;
+                    
+                    // Populate court filter dropdown
+                    courtFilterEl.innerHTML = '<option value="">All Courts</option>';
                     managedCourts.forEach(court => {
                         const option = document.createElement("option");
                         option.value = court.id;
                         option.textContent = court.name;
-                        courtSelect.appendChild(option);
+                        courtFilterEl.appendChild(option);
                     });
-                } else {
-                    courtSelect.innerHTML = "<option value=\"\">No courts available/managed.</option>";
-                    bookingListContainer.innerHTML = "<p>No courts assigned to your account for management.</p>";
                 }
-            } else {
-                 courtSelect.innerHTML = "<option value=\"\">Error loading courts.</option>";
+            } catch (error) {
+                console.error("Error loading courts:", error);
+                showToast("Failed to load managed courts.", true);
             }
         }
 
-        async function loadCourtBookings() {
-            const selectedCourtId = courtSelect.value;
-            if (!selectedCourtId) {
-                bookingListContainer.innerHTML = "<p>Please select a court to view bookings.</p>";
-                bookingFilters.style.display = "none";
-                return;
-            }
-            bookingFilters.style.display = "flex";
-            bookingListContainer.innerHTML = "<p>Loading bookings...</p>";
-
-            const statusFilter = document.getElementById("status-filter").value;
-            const dateFilter = document.getElementById("date-filter").value;
+        async function loadBookings() {
+            // Show loading state
+            bookingListEl.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading bookings...</p>
+                </div>
+            `;
             
-            let url = `${API_BASE_URL}/bookings/court/${selectedCourtId}?`;
-            if (statusFilter) url += `status=${statusFilter}&`;
-            if (dateFilter) url += `date=${dateFilter}&`;
-
-            const bookings = await fetchWithAuth(url);
-
-            if (bookings && Array.isArray(bookings)) {
-                if (bookings.length === 0) {
-                    bookingListContainer.innerHTML = "<p>No bookings found for this court with the current filters.</p>";
+            // Build query parameters
+            const params = new URLSearchParams();
+            
+            const courtId = courtFilterEl.value;
+            const status = statusFilterEl.value;
+            const date = dateFilterEl.value;
+            
+            if (status) params.append("status", status);
+            if (date) params.append("date", date);
+            
+            try {
+                const bookings = await fetchWithAuth(`${API_BASE_URL}/trainer/bookings?${params.toString()}`);
+                
+                if (!bookings || bookings.length === 0) {
+                    bookingListEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <h3>No bookings found</h3>
+                            <p>There are no bookings matching your filters.</p>
+                        </div>
+                    `;
                     return;
                 }
-                renderBookings(bookings);
-            } else {
-                bookingListContainer.innerHTML = "<p>Could not load bookings for this court. You might not be authorized or an error occurred.</p>";
-            }
-        }
-
-        function renderBookings(bookings) {
-            bookingListContainer.innerHTML = ""; 
-            bookings.forEach(booking => {
-                const item = document.createElement("div");
-                item.className = "booking-management-item";
                 
-                const startTime = new Date(booking.start_time + "Z");
-                const endTime = new Date(booking.end_time + "Z");
-
-                item.innerHTML = `
-                    <h3>Court: ${escapeHtml(booking.court_name)}</h3>
-                    <div class="booking-details">
-                        <p><strong>User:</strong> ${escapeHtml(booking.user_full_name || booking.user_id)}</p>
-                        <p><strong>Date:</strong> ${startTime.toLocaleDateString()}</p>
-                        <p><strong>Time:</strong> ${startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p><strong>Status:</strong> <span class="status-${booking.status.toLowerCase().replace(/\s+/g, '_')}">${booking.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span></p>
-                        ${booking.user_note ? `<p><strong>User Note:</strong> ${escapeHtml(booking.user_note)}</p>` : ''}
-                        ${booking.court_responsible_note ? `<p><strong>Your Note:</strong> ${escapeHtml(booking.court_responsible_note)}</p>` : ''}
-                        ${booking.approved_by_user_name ? `<p><strong>Handled By:</strong> ${escapeHtml(booking.approved_by_user_name)}</p>` : ''}
-                    </div>
-                    <div class="actions" id="actions-manage-${booking.id}">
-                        <!-- Action buttons -->
+                // Filter by court if selected (doing client-side filtering as an example)
+                let filteredBookings = bookings;
+                if (courtId) {
+                    filteredBookings = bookings.filter(booking => booking.court_id.toString() === courtId);
+                }
+                
+                if (filteredBookings.length === 0) {
+                    bookingListEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <h3>No bookings found</h3>
+                            <p>There are no bookings matching your filters.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort bookings by start time (most recent first)
+                filteredBookings.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+                
+                // Render bookings
+                bookingListEl.innerHTML = "";
+                filteredBookings.forEach(booking => {
+                    const bookingCard = createBookingCard(booking);
+                    bookingListEl.appendChild(bookingCard);
+                });
+            } catch (error) {
+                console.error("Error loading bookings:", error);
+                bookingListEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <h3>Error loading bookings</h3>
+                        <p>There was an error loading the bookings. Please try again later.</p>
                     </div>
                 `;
-                bookingListContainer.appendChild(item);
-                addManagementActions(booking);
-            });
+            }
         }
 
-        function escapeHtml(unsafe) {
-            if (unsafe === null || typeof unsafe === "undefined") return "";
-            return unsafe.toString()
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
-        }
-
-        function addManagementActions(booking) {
-            const actionsContainer = document.getElementById(`actions-manage-${booking.id}`);
-            if (!actionsContainer) return;
-
-            if (booking.status === "pending_approval") {
-                const approveButton = document.createElement("button");
-                approveButton.className = "btn btn-success btn-sm";
-                approveButton.textContent = "Approve";
-                approveButton.onclick = () => handleBookingAction(booking.id, "approve");
-                actionsContainer.appendChild(approveButton);
-
-                const rejectButton = document.createElement("button");
-                rejectButton.className = "btn btn-warning btn-sm";
-                rejectButton.textContent = "Reject";
-                rejectButton.onclick = () => handleBookingAction(booking.id, "reject");
-                actionsContainer.appendChild(rejectButton);
+        function createBookingCard(booking) {
+            const bookingDate = new Date(booking.start_time);
+            const endTime = new Date(booking.end_time);
+            
+            const card = document.createElement("div");
+            card.className = `booking-card ${booking.status}`;
+            
+            // Format status for display
+            let statusText = booking.status;
+            if (booking.status === "pending_approval") statusText = "Pending Approval";
+            else if (booking.status === "confirmed") statusText = "Confirmed";
+            else if (booking.status === "rejected") statusText = "Rejected";
+            else if (booking.status === "cancelled") statusText = "Cancelled";
+            
+            card.innerHTML = `
+                <div class="booking-header">
+                    <div class="booking-title">${booking.court_name || 'Court'}</div>
+                    <div class="booking-status ${booking.status}">${statusText}</div>
+                </div>
+                <div class="booking-details">
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Player</div>
+                        <div class="booking-detail-value">${booking.user_full_name || 'Unknown'}</div>
+                    </div>
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Date</div>
+                        <div class="booking-detail-value">${bookingDate.toLocaleDateString()}</div>
+                    </div>
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Time</div>
+                        <div class="booking-detail-value">${bookingDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    </div>
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Booking ID</div>
+                        <div class="booking-detail-value">#${booking.id}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Add user note if available
+            if (booking.user_note) {
+                card.innerHTML += `
+                    <div class="booking-note">
+                        <strong>Player Note:</strong> ${booking.user_note}
+                    </div>
+                `;
             }
             
-            // Allow cancellation for 'pending_approval' or 'confirmed' bookings by court responsible
-            if (booking.status === "pending_approval" || booking.status === "confirmed") {
-                 const cancelButton = document.createElement("button");
-                cancelButton.className = "btn btn-danger btn-sm";
-                cancelButton.textContent = "Cancel Booking";
-                cancelButton.onclick = () => handleBookingAction(booking.id, "cancel");
-                actionsContainer.appendChild(cancelButton);
+            // Add court responsible note if available (for rejected bookings)
+            if (booking.court_responsible_note) {
+                card.innerHTML += `
+                    <div class="booking-note">
+                        <strong>Rejection Reason:</strong> ${booking.court_responsible_note}
+                    </div>
+                `;
+            }
+            
+            // Add action buttons for pending bookings
+            if (booking.status === "pending_approval") {
+                const actionsDiv = document.createElement("div");
+                actionsDiv.className = "booking-actions";
+                
+                const approveBtn = document.createElement("button");
+                approveBtn.className = "btn btn-success";
+                approveBtn.textContent = "Approve";
+                approveBtn.onclick = () => approveBooking(booking.id);
+                
+                const rejectBtn = document.createElement("button");
+                rejectBtn.className = "btn btn-danger";
+                rejectBtn.textContent = "Reject";
+                rejectBtn.onclick = () => openRejectionModal(booking.id);
+                
+                actionsDiv.appendChild(approveBtn);
+                actionsDiv.appendChild(rejectBtn);
+                card.appendChild(actionsDiv);
+            }
+            
+            return card;
+        }
+
+        async function approveBooking(bookingId) {
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/trainer/bookings/${bookingId}/approve`, {
+                    method: "PUT"
+                });
+                
+                if (result && result.booking) {
+                    showToast("Booking approved successfully!");
+                    await loadBookings(); // Refresh the booking list
+                } else {
+                    showToast("Failed to approve booking.", true);
+                }
+            } catch (error) {
+                console.error("Error approving booking:", error);
+                showToast("Error approving booking.", true);
             }
         }
 
-        async function handleBookingAction(bookingId, action) {
-            let url = `${API_BASE_URL}/bookings/${bookingId}/${action}`;
-            let payload = {};
-            let confirmationMessage = `Are you sure you want to ${action} this booking?`;
+        function openRejectionModal(bookingId) {
+            currentBookingId = bookingId;
+            rejectionReasonEl.value = ""; // Clear previous reason
+            rejectionModal.style.display = "flex";
+        }
 
-            if (action === "reject") {
-                const reason = prompt("Please provide a reason for rejection (optional):");
-                if (reason === null) return; // User cancelled prompt
-                payload.reason = reason || "No reason provided.";
-            } else if (action === "cancel") {
-                 confirmationMessage = "Are you sure you want to cancel this booking? This action might notify users.";
-            }
+        function closeRejectionModal() {
+            rejectionModal.style.display = "none";
+            currentBookingId = null;
+        }
 
-            if (confirm(confirmationMessage)) {
-                const result = await fetchWithAuth(url, { 
-                    method: "POST",
-                    body: JSON.stringify(payload) 
+        async function confirmRejectBooking() {
+            if (!currentBookingId) return;
+            
+            const reason = rejectionReasonEl.value.trim();
+            
+            // Disable the button and show loading state
+            confirmRejectBtn.disabled = true;
+            confirmRejectBtn.textContent = "Rejecting...";
+            
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/trainer/bookings/${currentBookingId}/decline`, {
+                    method: "PUT",
+                    body: JSON.stringify({ reason })
                 });
+                
+                closeRejectionModal();
+                
                 if (result && result.booking) {
-                    showToast(result.message || `Booking ${action}ed successfully.`);
-                    loadCourtBookings(); // Refresh the list
+                    showToast("Booking rejected successfully!");
+                    await loadBookings(); // Refresh the booking list
                 } else {
-                    showToast(result ? (result.error || result.message || `Failed to ${action} booking.`) : `Failed to ${action} booking.`, true);
+                    showToast("Failed to reject booking.", true);
                 }
+            } catch (error) {
+                console.error("Error rejecting booking:", error);
+                showToast("Error rejecting booking.", true);
+            } finally {
+                // Reset button state
+                confirmRejectBtn.disabled = false;
+                confirmRejectBtn.textContent = "Reject Booking";
             }
+        }
+
+        function clearFilters() {
+            courtFilterEl.value = "";
+            statusFilterEl.value = "";
+            dateFilterEl.value = "";
+            loadBookings();
         }
 
         function showToast(message, isError = false) {
             toastMessage.textContent = message;
-            toastNotification.className = "toast show";
+            toastNotification.className = "toast show"; // Add 'show' class
             if (isError) {
                 toastNotification.classList.add("error");
             } else {
@@ -325,4 +602,3 @@
     </script>
 </body>
 </html>
-

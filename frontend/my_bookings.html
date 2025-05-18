@@ -5,38 +5,208 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourtReserve - My Bookings</title>
     <link rel="stylesheet" href="common_styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .booking-list-item {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
+        /* Page-specific styles for My Bookings */
+        .booking-filters {
+            padding: 16px;
+            background-color: #f8f9fa;
             border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+            color: #495057;
+        }
+        
+        .filter-group select, .filter-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        .booking-list {
+            margin-top: 20px;
+        }
+        
+        .booking-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             padding: 16px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid #6c757d; /* Default color */
         }
-        .booking-list-item h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 18px;
-            color: #333;
+        
+        .booking-card.pending_approval {
+            border-left-color: #ffc107; /* Yellow for pending */
         }
-        .booking-details p {
-            margin: 4px 0;
+        
+        .booking-card.confirmed {
+            border-left-color: #28a745; /* Green for confirmed */
+        }
+        
+        .booking-card.rejected {
+            border-left-color: #dc3545; /* Red for rejected */
+        }
+        
+        .booking-card.cancelled {
+            border-left-color: #6c757d; /* Gray for cancelled */
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .booking-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #212529;
+        }
+        
+        .booking-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .booking-status.pending_approval {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .booking-status.confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .booking-status.rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .booking-status.cancelled {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+        
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .booking-detail-item {
             font-size: 14px;
-            color: #555;
         }
-        .booking-details strong {
-            color: #333;
+        
+        .booking-detail-label {
+            color: #6c757d;
+            margin-bottom: 2px;
         }
-        .status-pending_approval { color: #ffc107; font-weight: bold; }
-        .status-confirmed { color: #28a745; font-weight: bold; }
-        .status-cancelled { color: #dc3545; font-weight: bold; }
-        .status-rejected { color: #dc3545; font-weight: bold; }
-        .status-completed { color: #6c757d; font-weight: bold; }
+        
+        .booking-detail-value {
+            font-weight: 500;
+            color: #212529;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+        
+        .booking-note {
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        /* Modal styles for cancellation confirmation */
+        .cancellation-warning {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+            margin: 20px auto;
+        }
 
-        .actions button {
-            margin-top: 10px;
-            margin-right: 8px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            border-bottom-color: #007bff;
+            color: #007bff;
         }
     </style>
 </head>
@@ -45,40 +215,96 @@
         <header class="app-header">
             <a href="dashboard.html" class="nav-icon" style="text-decoration:none; font-size: 20px;">&larr;</a>
             <div class="logo">My Bookings</div>
-            <a href="notifications.html" class="nav-icon">🔔</a> <!-- Placeholder for notifications icon -->
+            <div class="nav-icon"></div> <!-- Empty div for alignment -->
         </header>
 
-        <main id="main-content">
-            <div class="filter-controls" style="margin-bottom: 20px; display: flex; gap: 10px;">
-                <select id="status-filter" class="form-input" onchange="loadMyBookings()">
-                    <option value="">All Statuses</option>
-                    <option value="pending_approval">Pending Approval</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="completed">Completed</option>
-                </select>
-                <select id="period-filter" class="form-input" onchange="loadMyBookings()">
-                    <option value="">All Periods</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="past">Past</option>
-                </select>
+        <main>
+            <div class="tabs">
+                <div class="tab active" data-tab="upcoming" id="upcoming-tab">Upcoming</div>
+                <div class="tab" data-tab="past" id="past-tab">Past</div>
             </div>
-            <div id="booking-list-container">
-                <p>Loading your bookings...</p>
-            </div>
-        </main>
-    </div>
+            
+            <section class="booking-filters">
+                <h2>Filters</h2>
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="status-filter">Status</label>
+                        <select id="status-filter">
+                            <option value="">All Statuses</option>
+                            <option value="pending_approval">Pending Approval</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="date-filter">Date</label>
+                        <input type="date" id="date-filter">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="apply-filters-btn">Apply Filters</button>
+                <button class="btn btn-secondary" id="clear-filters-btn">Clear Filters</button>
+            </section>
 
-    <div id="toast-notification" class="toast">
-        <span id="toast-message"></span>
+            <section class="booking-list" id="booking-list">
+                <!-- Bookings will be populated here -->
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading bookings...</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Cancellation Confirmation Modal -->
+        <div class="modal-overlay" id="cancellation-modal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3>Confirm Cancellation</h3>
+                    <button class="modal-close-btn" onclick="closeCancellationModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="cancellation-warning" id="cancellation-warning">
+                        <!-- Warning message will be populated here -->
+                    </div>
+                    <p>Are you sure you want to cancel this booking?</p>
+                    <p><strong>Court:</strong> <span id="modal-court-name"></span></p>
+                    <p><strong>Date:</strong> <span id="modal-selected-date"></span></p>
+                    <p><strong>Time:</strong> <span id="modal-selected-time"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeCancellationModal()">Keep Booking</button>
+                    <button class="btn btn-danger" id="confirm-cancel-btn">Cancel Booking</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast-notification" class="toast">
+            <span id="toast-message"></span>
+        </div>
     </div>
 
     <script>
         const API_BASE_URL = "http://127.0.0.1:5000/api";
-        const bookingListContainer = document.getElementById("booking-list-container");
+        const bookingListEl = document.getElementById("booking-list");
+        const statusFilterEl = document.getElementById("status-filter");
+        const dateFilterEl = document.getElementById("date-filter");
+        const applyFiltersBtn = document.getElementById("apply-filters-btn");
+        const clearFiltersBtn = document.getElementById("clear-filters-btn");
+        const upcomingTabEl = document.getElementById("upcoming-tab");
+        const pastTabEl = document.getElementById("past-tab");
+        
+        const cancellationModal = document.getElementById("cancellation-modal");
+        const cancellationWarningEl = document.getElementById("cancellation-warning");
+        const modalCourtNameEl = document.getElementById("modal-court-name");
+        const modalSelectedDateEl = document.getElementById("modal-selected-date");
+        const modalSelectedTimeEl = document.getElementById("modal-selected-time");
+        const confirmCancelBtn = document.getElementById("confirm-cancel-btn");
+        
         const toastNotification = document.getElementById("toast-notification");
         const toastMessage = document.getElementById("toast-message");
+        
+        let currentBookingId = null; // For tracking which booking is being cancelled
+        let currentPeriod = "upcoming"; // Default tab
 
         function getAuthToken() {
             return localStorage.getItem("access_token");
@@ -95,19 +321,19 @@
             }
             try {
                 const response = await fetch(url, { ...options, headers });
-                if (response.status === 401) {
+                if (response.status === 401) { // Unauthorized
                     showToast("Session expired. Please log in again.", true);
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("user_info");
-                    window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
+                    window.location.href = "signup_login.html";
                     return null;
                 }
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: "Request failed: " + response.status }));
+                    const errorData = await response.json().catch(() => ({ error: "Request failed with status: " + response.status }));
                     showToast(errorData.error || errorData.message || `Error: ${response.status}`, true);
                     return null;
                 }
-                 if (response.status === 204) { // No Content
+                if (response.status === 204) { // No Content
                     return { success: true }; 
                 }
                 return response.json();
@@ -118,110 +344,242 @@
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Check if user is logged in
             if (!getAuthToken()) {
                 window.location.href = "signup_login.html?redirect=" + encodeURIComponent(window.location.pathname);
                 return;
             }
-            loadMyBookings();
+            
+            // Load bookings with default filters
+            await loadBookings();
+            
+            // Set up event listeners
+            applyFiltersBtn.addEventListener("click", loadBookings);
+            clearFiltersBtn.addEventListener("click", clearFilters);
+            confirmCancelBtn.addEventListener("click", confirmCancelBooking);
+            
+            // Tab switching
+            upcomingTabEl.addEventListener("click", () => switchTab("upcoming"));
+            pastTabEl.addEventListener("click", () => switchTab("past"));
         });
 
-        async function loadMyBookings() {
-            bookingListContainer.innerHTML = "<p>Loading your bookings...</p>";
-            const statusFilter = document.getElementById("status-filter").value;
-            const periodFilter = document.getElementById("period-filter").value;
+        function switchTab(tab) {
+            currentPeriod = tab;
             
-            let url = `${API_BASE_URL}/bookings?`;
-            if (statusFilter) url += `status=${statusFilter}&`;
-            if (periodFilter) url += `period=${periodFilter}&`;
+            // Update active tab styling
+            document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
+            document.querySelector(`[data-tab="${tab}"]`).classList.add("active");
+            
+            // Reset filters when switching tabs
+            clearFilters();
+            
+            // Load bookings for the selected tab
+            loadBookings();
+        }
 
-            const bookings = await fetchWithAuth(url);
-
-            if (bookings && Array.isArray(bookings)) {
-                if (bookings.length === 0) {
-                    bookingListContainer.innerHTML = "<p>You have no bookings matching the current filters.</p>";
+        async function loadBookings() {
+            // Show loading state
+            bookingListEl.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading bookings...</p>
+                </div>
+            `;
+            
+            // Build query parameters
+            const params = new URLSearchParams();
+            
+            const status = statusFilterEl.value;
+            const date = dateFilterEl.value;
+            
+            params.append("period", currentPeriod);
+            if (status) params.append("status", status);
+            if (date) params.append("date", date);
+            
+            try {
+                const bookings = await fetchWithAuth(`${API_BASE_URL}/bookings?${params.toString()}`);
+                
+                if (!bookings || bookings.length === 0) {
+                    bookingListEl.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📅</div>
+                            <h3>No bookings found</h3>
+                            <p>You don't have any ${currentPeriod} bookings matching your filters.</p>
+                            ${currentPeriod === "upcoming" ? '<a href="court_listing.html" class="btn btn-primary mt-3">Book a Court</a>' : ''}
+                        </div>
+                    `;
                     return;
                 }
-                renderBookings(bookings);
-            } else {
-                bookingListContainer.innerHTML = "<p>Could not load your bookings. Please try again later.</p>";
-            }
-        }
-
-        function renderBookings(bookings) {
-            bookingListContainer.innerHTML = ""; // Clear previous
-            bookings.forEach(booking => {
-                const item = document.createElement("div");
-                item.className = "booking-list-item";
                 
-                const startTime = new Date(booking.start_time + "Z"); // Assume UTC from server
-                const endTime = new Date(booking.end_time + "Z");
-
-                item.innerHTML = `
-                    <h3>${booking.court_name}</h3>
-                    <div class="booking-details">
-                        <p><strong>Date:</strong> ${startTime.toLocaleDateString()}</p>
-                        <p><strong>Time:</strong> ${startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                        <p><strong>Status:</strong> <span class="status-${booking.status.toLowerCase().replace(/\s+/g, '_')}">${booking.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span></p>
-                        ${booking.user_note ? `<p><strong>Your Note:</strong> ${escapeHtml(booking.user_note)}</p>` : ''}
-                        ${booking.court_responsible_note ? `<p><strong>Court Note:</strong> ${escapeHtml(booking.court_responsible_note)}</p>` : ''}
-                    </div>
-                    <div class="actions" id="actions-${booking.id}">
-                        <!-- Action buttons will be added here -->
+                // Sort bookings by start time
+                if (currentPeriod === "upcoming") {
+                    // For upcoming, sort by earliest first
+                    bookings.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+                } else {
+                    // For past, sort by most recent first
+                    bookings.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
+                }
+                
+                // Render bookings
+                bookingListEl.innerHTML = "";
+                bookings.forEach(booking => {
+                    const bookingCard = createBookingCard(booking);
+                    bookingListEl.appendChild(bookingCard);
+                });
+            } catch (error) {
+                console.error("Error loading bookings:", error);
+                bookingListEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <h3>Error loading bookings</h3>
+                        <p>There was an error loading your bookings. Please try again later.</p>
                     </div>
                 `;
-                bookingListContainer.appendChild(item);
-                addBookingActions(booking);
-            });
-        }
-        
-        function escapeHtml(unsafe) {
-            if (unsafe === null || typeof unsafe === "undefined") return "";
-            return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
-        }
-
-        function addBookingActions(booking) {
-            const actionsContainer = document.getElementById(`actions-${booking.id}`);
-            if (!actionsContainer) return;
-
-            // Allow cancellation for 'pending_approval' or 'confirmed' bookings
-            if (booking.status === "pending_approval" || booking.status === "confirmed") {
-                const now = new Date();
-                const startTime = new Date(booking.start_time + "Z");
-                const oneHourBeforeStart = new Date(startTime.getTime() - (60 * 60 * 1000));
-
-                // Check if current time is less than 1 hour before start time OR if user is court_responsible/admin (not checked here, backend handles final auth)
-                // For simplicity, frontend enables if status is cancellable. Backend will enforce the 1-hour rule strictly.
-                if (now < startTime) { // Basic check: can only cancel future bookings
-                    const cancelButton = document.createElement("button");
-                    cancelButton.className = "btn btn-danger btn-sm";
-                    cancelButton.textContent = "Cancel Booking";
-                    cancelButton.onclick = () => confirmAndCancelBooking(booking.id);
-                    actionsContainer.appendChild(cancelButton);
-                }
             }
         }
 
-        async function confirmAndCancelBooking(bookingId) {
-            if (confirm("Are you sure you want to cancel this booking?")) {
-                const result = await fetchWithAuth(`${API_BASE_URL}/bookings/${bookingId}/cancel`, { method: "POST" });
+        function createBookingCard(booking) {
+            const bookingDate = new Date(booking.start_time);
+            const endTime = new Date(booking.end_time);
+            
+            const card = document.createElement("div");
+            card.className = `booking-card ${booking.status}`;
+            
+            // Format status for display
+            let statusText = booking.status;
+            if (booking.status === "pending_approval") statusText = "Pending Approval";
+            else if (booking.status === "confirmed") statusText = "Confirmed";
+            else if (booking.status === "rejected") statusText = "Rejected";
+            else if (booking.status === "cancelled") statusText = "Cancelled";
+            
+            card.innerHTML = `
+                <div class="booking-header">
+                    <div class="booking-title">${booking.court_name || 'Court'}</div>
+                    <div class="booking-status ${booking.status}">${statusText}</div>
+                </div>
+                <div class="booking-details">
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Date</div>
+                        <div class="booking-detail-value">${bookingDate.toLocaleDateString()}</div>
+                    </div>
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Time</div>
+                        <div class="booking-detail-value">${bookingDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    </div>
+                    <div class="booking-detail-item">
+                        <div class="booking-detail-label">Booking ID</div>
+                        <div class="booking-detail-value">#${booking.id}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Add user note if available
+            if (booking.user_note) {
+                card.innerHTML += `
+                    <div class="booking-note">
+                        <strong>Your Note:</strong> ${booking.user_note}
+                    </div>
+                `;
+            }
+            
+            // Add court responsible note if available (for rejected bookings)
+            if (booking.court_responsible_note) {
+                card.innerHTML += `
+                    <div class="booking-note">
+                        <strong>Rejection Reason:</strong> ${booking.court_responsible_note}
+                    </div>
+                `;
+            }
+            
+            // Add cancellation button for confirmed or pending bookings in the future
+            if ((booking.status === "confirmed" || booking.status === "pending_approval") && 
+                new Date(booking.start_time) > new Date()) {
+                const actionsDiv = document.createElement("div");
+                actionsDiv.className = "booking-actions";
+                
+                const cancelBtn = document.createElement("button");
+                cancelBtn.className = "btn btn-danger";
+                cancelBtn.textContent = "Cancel Booking";
+                cancelBtn.onclick = () => openCancellationModal(booking);
+                
+                actionsDiv.appendChild(cancelBtn);
+                card.appendChild(actionsDiv);
+            }
+            
+            return card;
+        }
+
+        function openCancellationModal(booking) {
+            currentBookingId = booking.id;
+            
+            const bookingDate = new Date(booking.start_time);
+            const endTime = new Date(booking.end_time);
+            
+            modalCourtNameEl.textContent = booking.court_name || 'Court';
+            modalSelectedDateEl.textContent = bookingDate.toLocaleDateString();
+            modalSelectedTimeEl.textContent = `${bookingDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            
+            // Check if booking is within 1 hour of start time
+            const oneHourBeforeStart = new Date(bookingDate.getTime() - 60 * 60 * 1000);
+            const now = new Date();
+            
+            if (now >= oneHourBeforeStart) {
+                cancellationWarningEl.textContent = "Warning: Cancellations less than 1 hour before start time are not allowed.";
+                cancellationWarningEl.style.display = "block";
+                confirmCancelBtn.disabled = true;
+            } else {
+                cancellationWarningEl.style.display = "none";
+                confirmCancelBtn.disabled = false;
+            }
+            
+            cancellationModal.style.display = "flex";
+        }
+
+        function closeCancellationModal() {
+            cancellationModal.style.display = "none";
+            currentBookingId = null;
+        }
+
+        async function confirmCancelBooking() {
+            if (!currentBookingId) return;
+            
+            // Disable the button and show loading state
+            confirmCancelBtn.disabled = true;
+            confirmCancelBtn.textContent = "Cancelling...";
+            
+            try {
+                const result = await fetchWithAuth(`${API_BASE_URL}/bookings/${currentBookingId}/cancel`, {
+                    method: "PUT"
+                });
+                
+                closeCancellationModal();
+                
                 if (result && result.booking) {
-                    showToast(result.message || "Booking cancelled successfully.");
-                    loadMyBookings(); // Refresh the list
+                    showToast("Booking cancelled successfully!");
+                    await loadBookings(); // Refresh the booking list
                 } else {
-                    showToast(result ? (result.error || result.message || "Failed to cancel booking.") : "Failed to cancel booking.", true);
+                    showToast("Failed to cancel booking.", true);
                 }
+            } catch (error) {
+                console.error("Error cancelling booking:", error);
+                showToast("Error cancelling booking.", true);
+            } finally {
+                // Reset button state
+                confirmCancelBtn.disabled = false;
+                confirmCancelBtn.textContent = "Cancel Booking";
             }
+        }
+
+        function clearFilters() {
+            statusFilterEl.value = "";
+            dateFilterEl.value = "";
+            loadBookings();
         }
 
         function showToast(message, isError = false) {
             toastMessage.textContent = message;
-            toastNotification.className = "toast show";
+            toastNotification.className = "toast show"; // Add 'show' class
             if (isError) {
                 toastNotification.classList.add("error");
             } else {
@@ -231,8 +589,6 @@
                 toastNotification.className = toastNotification.className.replace(" show", "");
             }, 3000);
         }
-
     </script>
 </body>
 </html>
-
