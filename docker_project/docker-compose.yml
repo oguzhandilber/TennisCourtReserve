@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: tennis-court-reserve-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=src/main.py
+      - FLASK_ENV=production
+      - DATABASE_URL=sqlite:///tennis_court_reserve.db
+    volumes:
+      - backend_data:/app/instance
+    networks:
+      - tennis-court-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    container_name: tennis-court-reserve-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tennis-court-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  tennis-court-network:
+    driver: bridge
+
+volumes:
+  backend_data:
