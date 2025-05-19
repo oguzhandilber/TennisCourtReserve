@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,53 +11,80 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Page-specific styles for Dashboard */
+        body {
+            /* Apply to body for full page background */
+            background-image: url('https://images.unsplash.com/photo-1554060198-95a8ba8a2399?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            /* Example Nadal image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* Keeps the background fixed during scroll */
+        }
+
         .dashboard-header {
             padding: 24px 16px;
-            background-color: #00A79D; /* Vibrant Teal */
+            background-color: rgba(0, 167, 157, 0.8);
+            /* Vibrant Teal with some transparency */
             color: #FFFFFF;
         }
+
         .dashboard-header h1 {
             font-size: 24px;
             margin-bottom: 4px;
             color: #FFFFFF;
         }
+
         .dashboard-header p {
             font-size: 16px;
             margin-bottom: 0;
-            color: #E0F7F6; /* Light teal tint for subtext */
+            color: #E0F7F6;
+            /* Light teal tint for subtext */
         }
 
         .dashboard-section {
             margin-bottom: 32px;
         }
+
         .dashboard-section h2 {
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 16px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #E9ECEF; /* Light Grey */
+            border-bottom: 1px solid #E9ECEF;
+            /* Light Grey */
         }
 
         .booking-list .card {
-            border-left: 4px solid #00A79D; /* Vibrant Teal for confirmed */
+            border-left: 4px solid #00A79D;
+            /* Vibrant Teal for confirmed */
         }
+
         .booking-list .card.pending {
-            border-left-color: #FFC107; /* Amber Yellow for pending */
+            border-left-color: #FFC107;
+            /* Amber Yellow for pending */
         }
+
         .booking-list .card.declined {
-            border-left-color: #DC3545; /* Red for declined */
+            border-left-color: #DC3545;
+            /* Red for declined */
         }
+
         .booking-list .card.cancelled_by_user {
-            border-left-color: #6C757D; /* Medium Grey for cancelled */
+            border-left-color: #6C757D;
+            /* Medium Grey for cancelled */
         }
+
         .booking-list .card h3 {
             font-size: 16px;
             margin-bottom: 4px;
         }
+
         .booking-list .card p {
             font-size: 14px;
             margin-bottom: 2px;
         }
+
         .booking-status {
             font-size: 12px;
             font-weight: 500;
@@ -66,21 +94,34 @@
             margin-top: 8px;
             text-transform: capitalize;
         }
+
         .booking-status.confirmed {
-            background-color: #E0F7F6; /* Light Teal */
-            color: #007A70; /* Darker Teal */
+            background-color: #E0F7F6;
+            /* Light Teal */
+            color: #007A70;
+            /* Darker Teal */
         }
+
         .booking-status.pending {
-            background-color: #FFF8E1; /* Light Yellow */
-            color: #E6A800; /* Darker Yellow */
+            background-color: #FFF8E1;
+            /* Light Yellow */
+            color: #E6A800;
+            /* Darker Yellow */
         }
+
         .booking-status.declined {
-            background-color: #F8D7DA; /* Light Red */
-            color: #721C24; /* Darker Red */
+            background-color: #F8D7DA;
+            /* Light Red */
+            color: #721C24;
+            /* Darker Red */
         }
-        .booking-status.cancelled_by_user, .booking-status.cancelled_by_trainer {
-            background-color: #E9ECEF; /* Light Grey */
-            color: #343A40; /* Dark Grey */
+
+        .booking-status.cancelled_by_user,
+        .booking-status.cancelled_by_trainer {
+            background-color: #E9ECEF;
+            /* Light Grey */
+            color: #343A40;
+            /* Dark Grey */
         }
 
         .calendar-placeholder {
@@ -101,35 +142,44 @@
             display: flex;
             justify-content: space-around;
             padding: 10px 0;
-            border-top: 1px solid #E9ECEF; /* Light Grey */
+            border-top: 1px solid #E9ECEF;
+            /* Light Grey */
             background-color: #FFFFFF;
             position: sticky;
             bottom: 0;
             z-index: 1000;
         }
+
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-decoration: none;
-            color: #6C757D; /* Medium Grey */
+            color: #6C757D;
+            /* Medium Grey */
             font-size: 12px;
         }
+
         .nav-item.active {
-            color: #00A79D; /* Vibrant Teal */
-        }
-        .nav-item .icon {
-            font-size: 24px; /* Placeholder for actual icons */
-            margin-bottom: 4px;
+            color: #00A79D;
+            /* Vibrant Teal */
         }
 
+        .nav-item .icon {
+            font-size: 24px;
+            /* Placeholder for actual icons */
+            margin-bottom: 4px;
+        }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <header class="app-header">
             <a href="landing_page.html" class="logo">CourtReserve</a>
-            <div class="nav-icon" onclick="openNotifications()">🔔 <span id="notification-count" style="font-size:10px; background-color: #DC3545; color: white; border-radius:50%; padding: 2px 5px; position:relative; top: -8px; right: 5px;">0</span></div>
+            <div class="nav-icon" onclick="openNotifications()">🔔 <span id="notification-count"
+                    style="font-size:10px; background-color: #DC3545; color: white; border-radius:50%; padding: 2px 5px; position:relative; top: -8px; right: 5px;">0</span>
+            </div>
         </header>
 
         <div class="dashboard-header">
@@ -158,7 +208,7 @@
                     <p>(Shows booked slots, pending, and available times)</p>
                 </div>
             </section>
-            
+
         </main>
 
         <nav class="bottom-nav">
@@ -170,15 +220,15 @@
                 <span class="icon">🎾</span> <!-- Placeholder icon -->
                 <span>Courts</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert("Bookings Page Coming Soon!")">
+            <a href="#" class="nav-item" onclick="alert('Bookings Page Coming Soon!')">
                 <span class="icon">📅</span> <!-- Placeholder icon -->
                 <span>Bookings</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert("Messages Page Coming Soon!")">
+            <a href="#" class="nav-item" onclick="alert('Messages Page Coming Soon!')">
                 <span class="icon">💬</span> <!-- Placeholder icon -->
                 <span>Messages</span>
             </a>
-            <a href="#" class="nav-item" onclick="alert("Profile Page Coming Soon!")">
+            <a href="#" class="nav-item" onclick="alert('Profile Page Coming Soon!')">
                 <span class="icon">👤</span> <!-- Placeholder icon -->
                 <span>Profile</span>
             </a>
@@ -193,7 +243,7 @@
         const noBookingsMessageElement = document.getElementById("no-bookings-message");
         const notificationCountElement = document.getElementById("notification-count");
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const accessToken = localStorage.getItem("accessToken");
             const userString = localStorage.getItem("user");
 
@@ -359,5 +409,5 @@
 
     </script>
 </body>
-</html>
 
+</html>

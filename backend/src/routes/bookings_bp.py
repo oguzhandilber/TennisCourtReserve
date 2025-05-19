@@ -122,7 +122,8 @@ def get_user_bookings():
     query = Booking.query.filter_by(user_id=current_user_obj.id)
 
     if status_filter:
-        query = query.filter(Booking.status == status_filter)
+        statuses = [status.strip() for status in status_filter.split(',')]
+        query = query.filter(Booking.status.in_(statuses))
 
     now = datetime.utcnow()
     if period_filter == "upcoming":
